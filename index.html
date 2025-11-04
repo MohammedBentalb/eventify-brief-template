@@ -1,168 +1,188 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Events Management App</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
     <div class="app">
-        <!-- SIDEBAR -->
-        <aside class="sidebar">
-            <div class="sidebar__header">
-                <h1 class="sidebar__title">Events</h1>
-                <p class="sidebar__subtitle">Management</p>
+      <!-- SIDEBAR -->
+      <aside class="sidebar">
+        <div class="sidebar__header">
+          <h1 class="sidebar__title">Events</h1>
+          <p class="sidebar__subtitle">Management</p>
+        </div>
+
+        <nav class="sidebar__nav">
+          <!-- Screen buttons (students will add JS to handle click + switch screens) -->
+          <button class="sidebar__btn is-active" data-screen="stats">
+            <span class="sidebar__icon">📊</span>
+            <span class="sidebar__label">Statistics</span>
+          </button>
+
+          <button class="sidebar__btn" data-screen="add">
+            <span class="sidebar__icon">➕</span>
+            <span class="sidebar__label">Add Event</span>
+          </button>
+
+          <button class="sidebar__btn" data-screen="list">
+            <span class="sidebar__icon">📋</span>
+            <span class="sidebar__label">Events</span>
+          </button>
+
+          <button class="sidebar__btn" data-screen="archive">
+            <span class="sidebar__icon">🗄️</span>
+            <span class="sidebar__label">Archive</span>
+          </button>
+        </nav>
+
+        <footer class="sidebar__footer">
+          <p class="text-muted">UI Kit v1.0</p>
+        </footer>
+      </aside>
+
+      <!-- MAIN CONTENT -->
+      <main class="main">
+        <!-- Page Header (content changes based on active screen) -->
+        <header class="page-header">
+          <div class="page-header__content">
+            <h2 class="page-title" id="page-title">Statistics</h2>
+            <p class="page-subtitle" id="page-subtitle">
+              Overview of your events
+            </p>
+          </div>
+        </header>
+
+        <!-- SCREENS (only one visible at a time) -->
+        <div class="screens">
+          <!-- SCREEN 1: Statistics (DEFAULT) -->
+          <section class="screen is-visible" data-screen="stats">
+            <div class="screen__content">
+              <!-- STAT CARDS (JS will update values) -->
+              <div class="stats-grid">
+                <article class="stat-card">
+                  <p class="stat-card__label">Total Events</p>
+                  <p class="stat-card__value" id="stat-total-events">0</p>
+                </article>
+
+                <article class="stat-card">
+                  <p class="stat-card__label">Total Seats</p>
+                  <p class="stat-card__value" id="stat-total-seats">0</p>
+                </article>
+
+                <article class="stat-card">
+                  <p class="stat-card__label">Total Revenue</p>
+                  <p class="stat-card__value" id="stat-total-price">$0</p>
+                </article>
+              </div>
+
+              <!-- Placeholder for chart (students can add Chart.js or similar) -->
+              <div class="chart-placeholder">
+                <p class="text-muted">
+                  📈 Chart will be rendered here by JavaScript
+                </p>
+              </div>
             </div>
+          </section>
 
-            <nav class="sidebar__nav">
-                <!-- Screen buttons (students will add JS to handle click + switch screens) -->
-                <button class="sidebar__btn is-active" data-screen="stats">
-                    <span class="sidebar__icon">📊</span>
-                    <span class="sidebar__label">Statistics</span>
-                </button>
+          <!-- SCREEN 2: Add Event -->
+          <section class="screen" data-screen="add">
+            <div class="screen__content">
+              <form class="form" id="event-form">
+                <!-- Error messages area -->
+                <div
+                  class="alert alert--error is-hidden"
+                  id="form-errors"
+                ></div>
 
-                <button class="sidebar__btn" data-screen="add">
-                    <span class="sidebar__icon">➕</span>
-                    <span class="sidebar__label">Add Event</span>
-                </button>
-
-                <button class="sidebar__btn" data-screen="list">
-                    <span class="sidebar__icon">📋</span>
-                    <span class="sidebar__label">Events</span>
-                </button>
-
-                <button class="sidebar__btn" data-screen="archive">
-                    <span class="sidebar__icon">🗄️</span>
-                    <span class="sidebar__label">Archive</span>
-                </button>
-            </nav>
-
-            <footer class="sidebar__footer">
-                <p class="text-muted">UI Kit v1.0</p>
-            </footer>
-        </aside>
-
-        <!-- MAIN CONTENT -->
-        <main class="main">
-            <!-- Page Header (content changes based on active screen) -->
-            <header class="page-header">
-                <div class="page-header__content">
-                    <h2 class="page-title" id="page-title">Statistics</h2>
-                    <p class="page-subtitle" id="page-subtitle">Overview of your events</p>
+                <!-- Title -->
+                <div class="form__group">
+                  <label class="form__label" for="event-title"
+                    >Event Title</label
+                  >
+                  <input
+                    type="text"
+                    id="event-title"
+                    class="input"
+                    placeholder="Enter event title"
+                    required
+                  />
                 </div>
-            </header>
 
-            <!-- SCREENS (only one visible at a time) -->
-            <div class="screens">
-                
-                <!-- SCREEN 1: Statistics (DEFAULT) -->
-                <section class="screen is-visible" data-screen="stats">
-                    <div class="screen__content">
-                        <!-- STAT CARDS (JS will update values) -->
-                        <div class="stats-grid">
-                            <article class="stat-card">
-                                <p class="stat-card__label">Total Events</p>
-                                <p class="stat-card__value" id="stat-total-events">0</p>
-                            </article>
+                <!-- Image URL -->
+                <div class="form__group">
+                  <label class="form__label" for="event-image">Image URL</label>
+                  <input
+                    type="url"
+                    id="event-image"
+                    class="input"
+                    placeholder="https://example.com/image.jpg"
+                  />
+                </div>
 
-                            <article class="stat-card">
-                                <p class="stat-card__label">Total Seats</p>
-                                <p class="stat-card__value" id="stat-total-seats">0</p>
-                            </article>
+                <!-- Description -->
+                <div class="form__group">
+                  <label class="form__label" for="event-description"
+                    >Description</label
+                  >
+                  <textarea
+                    id="event-description"
+                    class="input"
+                    placeholder="Describe the event..."
+                    rows="4"
+                  ></textarea>
+                </div>
 
-                            <article class="stat-card">
-                                <p class="stat-card__label">Total Revenue</p>
-                                <p class="stat-card__value" id="stat-total-price">$0</p>
-                            </article>
-                        </div>
+                <!-- Seats -->
+                <div class="form__group">
+                  <label class="form__label" for="event-seats"
+                    >Number of Seats</label
+                  >
+                  <input
+                    type="number"
+                    id="event-seats"
+                    class="input"
+                    placeholder="100"
+                    min="1"
+                    required
+                  />
+                </div>
 
-                        <!-- Placeholder for chart (students can add Chart.js or similar) -->
-                        <div class="chart-placeholder">
-                            <p class="text-muted">📈 Chart will be rendered here by JavaScript</p>
-                        </div>
-                    </div>
-                </section>
+                <!-- Base Price -->
+                <div class="form__group">
+                  <label class="form__label" for="event-price"
+                    >Base Price ($)</label
+                  >
+                  <input
+                    type="number"
+                    id="event-price"
+                    class="input"
+                    placeholder="50.00"
+                    min="0"
+                    step="0.01"
+                    required
+                  />
+                </div>
 
-                <!-- SCREEN 2: Add Event -->
-                <section class="screen" data-screen="add">
-                    <div class="screen__content">
-                        <form class="form" id="event-form">
-                            <!-- Error messages area -->
-                            <div class="alert alert--error is-hidden" id="form-errors"></div>
+                <!-- VARIANTS SECTION -->
+                <fieldset class="variants">
+                  <legend class="variants__title">
+                    Pricing Variants (Optional)
+                    <button
+                      type="button"
+                      class="btn btn--small"
+                      id="btn-add-variant"
+                    >
+                      + Add Variant
+                    </button>
+                  </legend>
 
-                            <!-- Title -->
-                            <div class="form__group">
-                                <label class="form__label" for="event-title">Event Title</label>
-                                <input 
-                                    type="text" 
-                                    id="event-title" 
-                                    class="input" 
-                                    placeholder="Enter event title"
-                                    required
-                                >
-                            </div>
-
-                            <!-- Image URL -->
-                            <div class="form__group">
-                                <label class="form__label" for="event-image">Image URL</label>
-                                <input 
-                                    type="url" 
-                                    id="event-image" 
-                                    class="input" 
-                                    placeholder="https://example.com/image.jpg"
-                                >
-                            </div>
-
-                            <!-- Description -->
-                            <div class="form__group">
-                                <label class="form__label" for="event-description">Description</label>
-                                <textarea 
-                                    id="event-description" 
-                                    class="input" 
-                                    placeholder="Describe the event..."
-                                    rows="4"
-                                ></textarea>
-                            </div>
-
-                            <!-- Seats -->
-                            <div class="form__group">
-                                <label class="form__label" for="event-seats">Number of Seats</label>
-                                <input 
-                                    type="number" 
-                                    id="event-seats" 
-                                    class="input" 
-                                    placeholder="100"
-                                    min="1"
-                                    required
-                                >
-                            </div>
-
-                            <!-- Base Price -->
-                            <div class="form__group">
-                                <label class="form__label" for="event-price">Base Price ($)</label>
-                                <input 
-                                    type="number" 
-                                    id="event-price" 
-                                    class="input" 
-                                    placeholder="50.00"
-                                    min="0"
-                                    step="0.01"
-                                    required
-                                >
-                            </div>
-
-                            <!-- VARIANTS SECTION -->
-                            <fieldset class="variants">
-                                <legend class="variants__title">
-                                    Pricing Variants (Optional)
-                                    <button type="button" class="btn btn--small" id="btn-add-variant">+ Add Variant</button>
-                                </legend>
-                                
-                                <!-- Variant rows will be appended here by JS -->
-                                <div id="variants-list" class="variants__list">
-                                    <!-- EXAMPLE: Students should clone this structure -->
-                                    <!-- 
+                  <!-- Variant rows will be appended here by JS -->
+                  <div id="variants-list" class="variants__list">
+                    <!-- EXAMPLE: Students should clone this structure -->
+                    <!-- 
                                     <div class="variant-row">
                                         <input type="text" class="input variant-row__name" placeholder="Variant name (e.g., 'Early Bird')" />
                                         <input type="number" class="input variant-row__qty" placeholder="Qty" min="1" />
@@ -174,53 +194,55 @@
                                         <button type="button" class="btn btn--danger btn--small variant-row__remove">Remove</button>
                                     </div>
                                     -->
-                                </div>
-                            </fieldset>
+                  </div>
+                </fieldset>
 
-                            <!-- Submit Button -->
-                            <div class="form__actions">
-                                <button type="submit" class="btn btn--primary">Create Event</button>
-                                <button type="reset" class="btn btn--ghost">Clear</button>
-                            </div>
-                        </form>
-                    </div>
-                </section>
+                <!-- Submit Button -->
+                <div class="form__actions">
+                  <button type="submit" class="btn btn--primary">
+                    Create Event
+                  </button>
+                  <button type="reset" class="btn btn--ghost">Clear</button>
+                </div>
+              </form>
+            </div>
+          </section>
 
-                <!-- SCREEN 3: Events List -->
-                <section class="screen" data-screen="list">
-                    <div class="screen__content">
-                        <!-- Search & Sort Controls -->
-                        <div class="controls">
-                            <input 
-                                type="text" 
-                                id="search-events" 
-                                class="input" 
-                                placeholder="🔍 Search events by title..."
-                            >
-                            <select id="sort-events" class="select">
-                                <option value="title-asc">Sort: Title (A-Z)</option>
-                                <option value="title-desc">Sort: Title (Z-A)</option>
-                                <option value="price-asc">Sort: Price (Low to High)</option>
-                                <option value="price-desc">Sort: Price (High to Low)</option>
-                                <option value="seats-asc">Sort: Seats (Low to High)</option>
-                            </select>
-                        </div>
+          <!-- SCREEN 3: Events List -->
+          <section class="screen" data-screen="list">
+            <div class="screen__content">
+              <!-- Search & Sort Controls -->
+              <div class="controls">
+                <input
+                  type="text"
+                  id="search-events"
+                  class="input"
+                  placeholder="🔍 Search events by title..."
+                />
+                <select id="sort-events" class="select">
+                  <option value="title-asc">Sort: Title (A-Z)</option>
+                  <option value="title-desc">Sort: Title (Z-A)</option>
+                  <option value="price-asc">Sort: Price (Low to High)</option>
+                  <option value="price-desc">Sort: Price (High to Low)</option>
+                  <option value="seats-asc">Sort: Seats (Low to High)</option>
+                </select>
+              </div>
 
-                        <!-- Events Table -->
-                        <table class="table" id="events-table">
-                            <thead class="table__head">
-                                <tr>
-                                    <th>#</th>
-                                    <th>Title</th>
-                                    <th>Seats</th>
-                                    <th>Price</th>
-                                    <th>Variants</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody class="table__body">
-                                <!-- EXAMPLE: Students will populate this with JS -->
-                                <!-- 
+              <!-- Events Table -->
+              <table class="table" id="events-table">
+                <thead class="table__head">
+                  <tr>
+                    <th>#</th>
+                    <th>Title</th>
+                    <th>Seats</th>
+                    <th>Price</th>
+                    <th>Variants</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody class="table__body">
+                  <!-- EXAMPLE: Students will populate this with JS -->
+                  <!-- 
                                 <tr class="table__row" data-event-id="1">
                                     <td>1</td>
                                     <td>Summer Festival</td>
@@ -234,32 +256,32 @@
                                     </td>
                                 </tr>
                                 -->
-                            </tbody>
-                        </table>
+                </tbody>
+              </table>
 
-                        <!-- Pagination -->
-                        <div class="pagination" id="events-pagination">
-                            <!-- JS will generate pagination buttons -->
-                        </div>
-                    </div>
-                </section>
+              <!-- Pagination -->
+              <div class="pagination" id="events-pagination">
+                <!-- JS will generate pagination buttons -->
+              </div>
+            </div>
+          </section>
 
-                <!-- SCREEN 4: Archive -->
-                <section class="screen" data-screen="archive">
-                    <div class="screen__content">
-                        <table class="table" id="archive-table">
-                            <thead class="table__head">
-                                <tr>
-                                    <th>#</th>
-                                    <th>Title</th>
-                                    <th>Seats</th>
-                                    <th>Price</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody class="table__body">
-                                <!-- EXAMPLE: Students will populate this with JS -->
-                                <!-- 
+          <!-- SCREEN 4: Archive -->
+          <section class="screen" data-screen="archive">
+            <div class="screen__content">
+              <table class="table" id="archive-table">
+                <thead class="table__head">
+                  <tr>
+                    <th>#</th>
+                    <th>Title</th>
+                    <th>Seats</th>
+                    <th>Price</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody class="table__body">
+                  <!-- EXAMPLE: Students will populate this with JS -->
+                  <!-- 
                                 <tr class="table__row" data-event-id="1">
                                     <td>1</td>
                                     <td>Old Event</td>
@@ -270,27 +292,28 @@
                                     </td>
                                 </tr>
                                 -->
-                            </tbody>
-                        </table>
-                    </div>
-                </section>
-
+                </tbody>
+              </table>
             </div>
-        </main>
+          </section>
+        </div>
+      </main>
     </div>
 
     <!-- MODAL (hidden by default) -->
     <div class="modal is-hidden" id="event-modal">
-        <div class="modal__overlay"></div>
-        <div class="modal__content">
-            <header class="modal__header">
-                <h3 class="modal__title" id="modal-title">Event Details</h3>
-                <button class="modal__close" data-action="close-modal">&times;</button>
-            </header>
-            <div class="modal__body" id="modal-body">
-                <!-- Content populated by JS -->
-            </div>
+      <div class="modal__overlay"></div>
+      <div class="modal__content">
+        <header class="modal__header">
+          <h3 class="modal__title" id="modal-title">Event Details</h3>
+          <button class="modal__close" data-action="close-modal">
+            &times;
+          </button>
+        </header>
+        <div class="modal__body" id="modal-body">
+          <!-- Content populated by JS -->
         </div>
+      </div>
     </div>
 
     <!-- SAMPLE DATA (for reference) -->
@@ -313,5 +336,6 @@
 
     const sampleArchive = [];
     -->
-</body>
+    <script src="dist/index.js" defer></script>
+  </body>
 </html>
