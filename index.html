@@ -17,7 +17,7 @@
 
         <nav class="sidebar__nav">
           <!-- Screen buttons (students will add JS to handle click + switch screens) -->
-          <button class="sidebar__btn is-active" data-screen="stats">
+          <button class="sidebar__btn" data-screen="stats">
             <span class="sidebar__icon">📊</span>
             <span class="sidebar__label">Statistics</span>
           </button>
@@ -48,9 +48,8 @@
         <!-- Page Header (content changes based on active screen) -->
         <header class="page-header">
           <div class="page-header__content">
-            <h2 class="page-title" id="page-title">Statistics</h2>
+            <h2 class="page-title" id="page-title"></h2>
             <p class="page-subtitle" id="page-subtitle">
-              Overview of your events
             </p>
           </div>
         </header>
@@ -58,7 +57,7 @@
         <!-- SCREENS (only one visible at a time) -->
         <div class="screens">
           <!-- SCREEN 1: Statistics (DEFAULT) -->
-          <section class="screen is-visible" data-screen="stats">
+          <section class="screen" data-screen="stats">
             <div class="screen__content">
               <!-- STAT CARDS (JS will update values) -->
               <div class="stats-grid">
