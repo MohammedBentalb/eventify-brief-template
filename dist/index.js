@@ -1,13 +1,6 @@
-"use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
+import * as ChartJs from "chart.js";
+// @ts-ignore
+ChartJs.Chart.register.apply(null, Object.values(ChartJs).filter((chartClass) => chartClass.id));
 const theMainContentTile = document.querySelector(".page-header__content");
 const sideNavButtons = document.querySelectorAll("button[data-screen]");
 const mainSection = document.querySelectorAll("section[data-screen]");
@@ -56,20 +49,18 @@ function updateUiPlacement(screen) {
 //fetching data from local api
 fetchData("http://localhost:8080/posts");
 // async function that fetches data from local json-server
-function fetchData(url_1) {
-    return __awaiter(this, arguments, void 0, function* (url, options = undefined) {
-        try {
-            const response = yield fetch(url, options);
-            if (!response.ok)
-                throw Error("response is not okay");
-            const data = yield response.json();
-            calculateStats(data);
-        }
-        catch (e) {
-            if (e instanceof Error)
-                console.log(e.message);
-        }
-    });
+async function fetchData(url, options = undefined) {
+    try {
+        const response = await fetch(url, options);
+        if (!response.ok)
+            throw Error("response is not okay");
+        const data = await response.json();
+        calculateStats(data);
+    }
+    catch (e) {
+        if (e instanceof Error)
+            console.log(e.message);
+    }
 }
 // function that gets data and calculate the total seats, price, and events
 function calculateStats(data) {
@@ -80,6 +71,7 @@ function calculateStats(data) {
         totalTheoryPrice += event.seats * event.price;
     });
     RenderStats(totalNumberOfSeats, totalEvents, totalTheoryPrice);
+    renderGraph(data.map((evt) => evt.title), data.map((evt) => evt.seats));
 }
 //function that renders the calculated stats to the DOM
 function RenderStats(seatsNumber, eventsNumber, priceNumber) {
@@ -88,5 +80,22 @@ function RenderStats(seatsNumber, eventsNumber, priceNumber) {
     const totalPrice = document.querySelector("#stat-total-price");
     totalEvents.textContent = eventsNumber.toString();
     totalSeats.textContent = seatsNumber.toString();
-    totalPrice.textContent = priceNumber.toString();
+    totalPrice.textContent = `${priceNumber.toString()}$`;
+}
+// function that renders a graph based on the available events
+function renderGraph(labels, data) {
+    const ctx = document.getElementById("myChart");
+    new ChartJs.Chart(ctx, {
+        type: "line",
+        data: {
+            labels,
+            datasets: [
+                {
+                    label: "# of seats",
+                    data,
+                    borderWidth: 1,
+                },
+            ],
+        },
+    });
 }

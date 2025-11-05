@@ -49,8 +49,7 @@
         <header class="page-header">
           <div class="page-header__content">
             <h2 class="page-title" id="page-title"></h2>
-            <p class="page-subtitle" id="page-subtitle">
-            </p>
+            <p class="page-subtitle" id="page-subtitle"></p>
           </div>
         </header>
 
@@ -79,10 +78,10 @@
 
               <!-- Placeholder for chart (students can add Chart.js or similar) -->
               <div class="chart-placeholder">
-               <!--  <p class="text-muted">
+                <!--  <p class="text-muted">
                   📈 Chart will be rendered here by JavaScript
                 </p> -->
-                <canvas id="myChart"></canvas>
+                <canvas id="myChart" style="width: 100%; display: inline;"></canvas>
               </div>
             </div>
           </section>
@@ -336,7 +335,17 @@
 
     const sampleArchive = [];
     -->
+    <script type="importmap">
+      {
+        "imports": {
+          "@kurkle/color": "/node_modules/@kurkle/color/dist/color.esm.js",
+          "chart.js": "/node_modules/chart.js/dist/chart.js"
+        }
+      }
+    </script>
+
+    <!-- <script type="module" src="dist/index.js" defer></script> -->
     <script type="module" src="dist/index.js" defer></script>
-    <script  src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
   </body>
 </html>
