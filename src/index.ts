@@ -1,6 +1,10 @@
 const theMainContentTile = document.querySelector(".page-header__content")!;
-const sideNavButtons = document.querySelectorAll<HTMLButtonElement>("button[data-screen]");
-const mainSection = document.querySelectorAll<HTMLDListElement>("section[data-screen]");
+const sideNavButtons = document.querySelectorAll<HTMLButtonElement>(
+  "button[data-screen]"
+);
+const mainSection = document.querySelectorAll<HTMLDListElement>(
+  "section[data-screen]"
+);
 
 const eventTiles = {
   stats: {
@@ -20,10 +24,30 @@ const eventTiles = {
     subTile: "View the deleted Events",
   },
 };
+
+type eventType = {
+  id: number;
+  title: string;
+  image: string;
+  description: string;
+  seats: number;
+  price: number;
+  variants: [
+    {
+      id: number;
+      name: string;
+      qty: number;
+      value: number;
+      type: "fixed" | "percentage";
+    }
+  ];
+};
+
 type screenContentType = keyof typeof eventTiles;
 
 // retrieving the content displayed keyword from local storage of setting it to be equal to stats by default
-let screenContent: screenContentType = (localStorage.getItem("screenContent") as screenContentType) || "stats";
+let screenContent: screenContentType =
+  (localStorage.getItem("screenContent") as screenContentType) || "stats";
 
 // calling function that initialize the ui based on the value of local storage or stats by default
 updateUiPlacement(screenContent);
@@ -55,4 +79,48 @@ function updateUiPlacement(screen: screenContentType) {
   theMainContentTile.children[0].textContent = eventTiles[screenContent].title;
   theMainContentTile.children[1].textContent =
     eventTiles[screenContent].subTile;
+}
+
+//fetching data from local api
+fetchData("http://localhost:8080/posts");
+
+// async function that fetches data from local json-server
+async function fetchData(url: string, options = undefined) {
+  try {
+    const response = await fetch(url, options);
+    if (!response.ok) throw Error("response is not okay");
+    const data = await response.json();
+    calculateStats(data);
+  } catch (e) {
+    if (e instanceof Error) console.log(e.message);
+  }
+}
+
+// function that gets data and calculate the total seats, price, and events
+function calculateStats(data: eventType[]) {
+  let totalTheoryPrice = 0,
+    totalNumberOfSeats = 0,
+    totalEvents = 0;
+
+  data.map((event) => {
+    totalEvents++;
+    totalNumberOfSeats += event.seats;
+    totalTheoryPrice += event.seats * event.price;
+  });
+  RenderStats(totalNumberOfSeats, totalEvents, totalTheoryPrice);
+}
+
+//function that renders the calculated stats to the DOM
+function RenderStats(
+  seatsNumber: number,
+  eventsNumber: number,
+  priceNumber: number
+) {
+  const totalEvents = document.querySelector("#stat-total-events")!;
+  const totalSeats = document.querySelector("#stat-total-seats")!;
+  const totalPrice = document.querySelector("#stat-total-price")!;
+
+  totalEvents.textContent = eventsNumber.toString();
+  totalSeats.textContent = seatsNumber.toString();
+  totalPrice.textContent = priceNumber.toString();
 }

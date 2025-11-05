@@ -79,9 +79,10 @@
 
               <!-- Placeholder for chart (students can add Chart.js or similar) -->
               <div class="chart-placeholder">
-                <p class="text-muted">
+               <!--  <p class="text-muted">
                   📈 Chart will be rendered here by JavaScript
-                </p>
+                </p> -->
+                <canvas id="myChart"></canvas>
               </div>
             </div>
           </section>
@@ -335,6 +336,7 @@
 
     const sampleArchive = [];
     -->
-    <script src="dist/index.js" defer></script>
+    <script type="module" src="dist/index.js" defer></script>
+    <script  src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
   </body>
 </html>

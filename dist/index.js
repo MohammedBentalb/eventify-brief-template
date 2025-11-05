@@ -1,4 +1,13 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 const theMainContentTile = document.querySelector(".page-header__content");
 const sideNavButtons = document.querySelectorAll("button[data-screen]");
 const mainSection = document.querySelectorAll("section[data-screen]");
@@ -43,4 +52,41 @@ function updateUiPlacement(screen) {
     theMainContentTile.children[0].textContent = eventTiles[screenContent].title;
     theMainContentTile.children[1].textContent =
         eventTiles[screenContent].subTile;
+}
+//fetching data from local api
+fetchData("http://localhost:8080/posts");
+// async function that fetches data from local json-server
+function fetchData(url_1) {
+    return __awaiter(this, arguments, void 0, function* (url, options = undefined) {
+        try {
+            const response = yield fetch(url, options);
+            if (!response.ok)
+                throw Error("response is not okay");
+            const data = yield response.json();
+            calculateStats(data);
+        }
+        catch (e) {
+            if (e instanceof Error)
+                console.log(e.message);
+        }
+    });
+}
+// function that gets data and calculate the total seats, price, and events
+function calculateStats(data) {
+    let totalTheoryPrice = 0, totalNumberOfSeats = 0, totalEvents = 0;
+    data.map((event) => {
+        totalEvents++;
+        totalNumberOfSeats += event.seats;
+        totalTheoryPrice += event.seats * event.price;
+    });
+    RenderStats(totalNumberOfSeats, totalEvents, totalTheoryPrice);
+}
+//function that renders the calculated stats to the DOM
+function RenderStats(seatsNumber, eventsNumber, priceNumber) {
+    const totalEvents = document.querySelector("#stat-total-events");
+    const totalSeats = document.querySelector("#stat-total-seats");
+    const totalPrice = document.querySelector("#stat-total-price");
+    totalEvents.textContent = eventsNumber.toString();
+    totalSeats.textContent = seatsNumber.toString();
+    totalPrice.textContent = priceNumber.toString();
 }
