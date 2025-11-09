@@ -1,19 +1,36 @@
 import * as ChartJs from "chart.js";
 
 // @ts-ignore
-ChartJs.Chart.register.apply(
-  null,
-  Object.values(ChartJs).filter((chartClass: any) => chartClass.id)
-);
+ChartJs.Chart.register.apply(null,Object.values(ChartJs).filter((chartClass: any) => chartClass.id));
 
 const theMainContentTile = document.querySelector(".page-header__content")!;
-const sideNavButtons = document.querySelectorAll<HTMLButtonElement>(
-  "button[data-screen]"
-);
-const mainSection = document.querySelectorAll<HTMLDListElement>(
-  "section[data-screen]"
-);
+const sideNavButtons = document.querySelectorAll<HTMLButtonElement>("button[data-screen]");
+const mainSection = document.querySelectorAll<HTMLDListElement>( "section[data-screen]");
 
+// form inputs
+const eventForm = document.querySelector<HTMLFormElement>("#event-form")!;
+const eventName = document.querySelector<HTMLInputElement>("#event-title")!;
+const eventImage = document.querySelector<HTMLInputElement>("#event-image")!;
+const eventDesc = document.querySelector<HTMLTextAreaElement>("#event-description")!;
+const eventSeats = document.querySelector<HTMLInputElement>("#event-seats")!;
+const eventPrice = document.querySelector<HTMLInputElement>("#event-price")!;
+
+// variant
+const variantName = document.querySelector<HTMLInputElement>(".variant-row__name")!;
+const variantQuantity = document.querySelector<HTMLInputElement>(".variant-row__qty")!;
+const variantValue = document.querySelector<HTMLInputElement>(".variant-row__value")!;
+const variantType = document.querySelector<HTMLInputElement>(".variant-row__type")!;
+const addVariantButton = document.querySelector("#add-variant-btn")!;
+const variantSection = document.querySelector("#variants-parent")!;
+
+
+let errorsArray: ErrorType[] = [];
+let variantArray: eventType["variants"] | [] = [];
+
+// error form field
+const errorSpace = document.querySelector("#form-errors")!;
+
+// eventTiles a variable that contans all titles for each section for quicka access
 const eventTiles = {
   stats: {
     title: "Statistics",
@@ -33,6 +50,9 @@ const eventTiles = {
   },
 };
 
+// eventCount a variable that represent the event id added bu form (initialized inside the fetchData function)
+let eventCount = 0;
+
 type eventType = {
   id: number;
   title: string;
@@ -40,17 +60,17 @@ type eventType = {
   description: string;
   seats: number;
   price: number;
-  variants: [
-    {
-      id: number;
-      name: string;
-      qty: number;
-      value: number;
-      type: "fixed" | "percentage";
-    }
-  ];
+  variants:
+    | {
+        id: number;
+        name: string;
+        qty: number;
+        value: number;
+        type: "fixed" | "percentage";
+      }[]
+    | [];
 };
-
+type ErrorType = { name: string; errorText: string };
 type screenContentType = keyof typeof eventTiles;
 
 // retrieving the content displayed keyword from local storage of setting it to be equal to stats by default
@@ -60,7 +80,7 @@ let screenContent: screenContentType =
 // calling function that initialize the ui based on the value of local storage or stats by default
 updateUiPlacement(screenContent);
 
-// looping through botton lists and having click eventlistnner for each one of them to select the active button
+// a loop for looping through botton lists and having click eventlistnner for each one of them to select the active button
 sideNavButtons.forEach((element) => {
   element.addEventListener("click", (e) => {
     const target = e.currentTarget as HTMLButtonElement;
@@ -89,22 +109,24 @@ function updateUiPlacement(screen: screenContentType) {
     eventTiles[screenContent].subTile;
 }
 
-//fetching data from local api
+// calling fetchData for fetching data from local api
 fetchData("http://localhost:8080/posts");
 
-// async function that fetches data from local json-server
-async function fetchData(url: string, options = undefined) {
+// fetchData an async function that fetches data from local json-server api
+async function fetchData(url: string, options: any | undefined = undefined) {
   try {
     const response = await fetch(url, options);
     if (!response.ok) throw Error("response is not okay");
-    const data = await response.json();
+    const data: eventType[] = await response.json();
+    console.log(data);
+    eventCount = data.length + 1;
     calculateStats(data);
   } catch (e) {
     if (e instanceof Error) console.log(e.message);
   }
 }
 
-// function that gets data and calculate the total seats, price, and events
+// calculateStats a function that gets data and calculate the total seats, price, and events
 function calculateStats(data: eventType[]) {
   let totalTheoryPrice = 0,
     totalNumberOfSeats = 0,
@@ -122,7 +144,7 @@ function calculateStats(data: eventType[]) {
   );
 }
 
-//function that renders the calculated stats to the DOM
+// renderStats a function that renders the calculated stats to the DOM
 function RenderStats(
   seatsNumber: number,
   eventsNumber: number,
@@ -155,3 +177,154 @@ function renderGraph(labels: string[], data: number[]) {
     },
   });
 }
+
+// addEventa a function that handels the entire form manipulation [adding events, adding variants, entire validation]
+function addEvent() {
+  let found = null;
+  const URLRegex = /^(?:(?:https?|ftp):\/\/)?(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(?:\/[^\s]*)?$/i
+  // an event for "adding variant button"
+  addVariantButton.addEventListener("click", (e) => {
+    e.preventDefault();
+    if (
+      variantName &&
+      variantName.value.trim() !== "" &&
+      variantQuantity &&
+      !isNaN(Number(variantQuantity.value)) && Number(variantQuantity.value) > 0 &&
+      variantType &&
+      !isNaN(Number(variantValue.value)) && Number(variantValue.value) > 0 &&
+      (variantType.value === "fixed" || variantType.value === "percentage")
+    ) {
+      found = variantArray.find((v) => v.name === variantName.value.trim());
+
+      if (found) return;
+      variantArray = [
+        ...variantArray,
+        {
+          id: variantArray.length,
+          name: variantName.value.trim(),
+          qty: Number(variantQuantity.value),
+          value: Number(variantValue.value),
+          type: (variantType.value.trim() as "fixed") || "percentage",
+        },
+      ];
+
+    
+      renderVariants()
+      removeVariant()
+    }
+
+    found = null;
+    console.log(variantArray);
+  });
+  
+  // adding an event to track the form submit  event
+  eventForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    errorsArray = [];
+     errorSpace.innerHTML = "";
+
+    if (!eventName || eventName.value.trim() === "")
+      errorsArray.push({ name: "title", errorText: "Invalid name" });
+    if (!eventImage || eventImage.value.trim() === "" || !URLRegex.test(eventImage.value.trim()))
+      errorsArray.push({ name: "image", errorText: "Invalid image url" });
+    if (!eventDesc || eventDesc.value.trim() === "")
+      errorsArray.push({ name: "desc", errorText: "Invalid text" });
+    if (
+      !eventSeats ||
+      isNaN(Number(eventSeats.value)) ||
+      Number(eventSeats.value) == 0
+    )
+      errorsArray.push({ name: "seats", errorText: "Invalid seats number" });
+    if (
+      !eventPrice ||
+      isNaN(Number(eventPrice.value)) ||
+      Number(eventPrice.value) <= 0
+    )
+      errorsArray.push({ name: "price", errorText: "Invalid price number" });
+
+    //console.log(errorsArray);
+
+    if (errorsArray.length === 0) {
+      let option = {
+        method: "POST",
+        headers: {
+          "content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id: eventCount,
+          title: eventName.value,
+          image: eventImage.value,
+          description: eventDesc.value,
+          seats: parseInt(eventSeats.value),
+          price: Number(eventPrice.value),
+          variants: variantArray,
+        }),
+      };
+
+      fetchData("http://localhost:8080/posts", option);
+
+      // reset inputs
+      variantArray = [];
+
+      eventName.value = "";
+      eventImage.value = "";
+      eventDesc.value = "";
+      eventSeats.value = "0";
+      eventPrice.value = "0";
+    } else {
+      errorSpace?.classList.toggle("is-hidden", errorsArray.length === 0);
+
+      errorsArray.map((err) => {
+        let content = `
+      <li style="background-color: rgb(255, 255, 255, .5); padding-inline: .5rem; padding-block: .5rem; border-radius: .4rem; display: flex; gap: 1rem; font-weight: 500;"><span style="font-weight: bold; text-transform: capitalize;">* ${err.name}: </span>${err.errorText}</li>
+        `;
+        errorSpace.innerHTML += content;
+      });
+    }
+    // console.log(errorsArray);
+  });
+}
+
+// renedrVariants a function that loops through the variant array and render all variants to the DOM
+function renderVariants(){
+  variantSection.innerHTML = ""
+  if(variantArray.length === 0) return
+
+  variantArray.map(vr => {
+    const div = document.createElement("div");
+    
+    div.classList.add("variant-list");
+    div.id = `variant-n-${vr.id}`;
+    
+    let content = `
+      <p class="variant-name">${vr.name}</p>
+      <p class="variant-quantity">${vr.qty}</p>
+      <p class="variant-value">${vr.value}</p>
+      <p class="variant-type">${vr.type}</p>
+      <button type="button" class="btn btn--danger" style="margin-r:auto; height: 25px;" id="remove-variant">remove</button>
+    `;
+    div.innerHTML = content;
+    variantSection.appendChild(div);
+    
+
+  })
+}
+
+// removeVariant a function that loops through the variant array and remove the one whose remove button got clicked
+function removeVariant() {
+  variantArray.map(vr => {
+    const variantDiv = document.querySelector(`#variant-n-${vr.id}`)
+
+    variantDiv?.addEventListener("click", (e) => {
+      const button = e.target as HTMLButtonElement
+      if(button.id === "remove-variant"){
+        const newVarriants = variantArray.filter(item => item.id !== Number(variantDiv.id.split("-")[2]))
+        variantArray = [...newVarriants]
+        renderVariants()
+      }
+    })
+  })
+}
+
+// calling add event to allow form functionalities to work
+addEvent();

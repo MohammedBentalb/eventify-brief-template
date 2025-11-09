@@ -4,6 +4,25 @@ ChartJs.Chart.register.apply(null, Object.values(ChartJs).filter((chartClass) =>
 const theMainContentTile = document.querySelector(".page-header__content");
 const sideNavButtons = document.querySelectorAll("button[data-screen]");
 const mainSection = document.querySelectorAll("section[data-screen]");
+// form inputs
+const eventForm = document.querySelector("#event-form");
+const eventName = document.querySelector("#event-title");
+const eventImage = document.querySelector("#event-image");
+const eventDesc = document.querySelector("#event-description");
+const eventSeats = document.querySelector("#event-seats");
+const eventPrice = document.querySelector("#event-price");
+// variant
+const variantName = document.querySelector(".variant-row__name");
+const variantQuantity = document.querySelector(".variant-row__qty");
+const variantValue = document.querySelector(".variant-row__value");
+const variantType = document.querySelector(".variant-row__type");
+const addVariantButton = document.querySelector("#add-variant-btn");
+const variantSection = document.querySelector("#variants-parent");
+let errorsArray = [];
+let variantArray = [];
+// error form field
+const errorSpace = document.querySelector("#form-errors");
+// eventTiles a variable that contans all titles for each section for quicka access
 const eventTiles = {
     stats: {
         title: "Statistics",
@@ -22,11 +41,13 @@ const eventTiles = {
         subTile: "View the deleted Events",
     },
 };
+// eventCount a variable that represent the event id added bu form (initialized inside the fetchData function)
+let eventCount = 0;
 // retrieving the content displayed keyword from local storage of setting it to be equal to stats by default
 let screenContent = localStorage.getItem("screenContent") || "stats";
 // calling function that initialize the ui based on the value of local storage or stats by default
 updateUiPlacement(screenContent);
-// looping through botton lists and having click eventlistnner for each one of them to select the active button
+// a loop for looping through botton lists and having click eventlistnner for each one of them to select the active button
 sideNavButtons.forEach((element) => {
     element.addEventListener("click", (e) => {
         const target = e.currentTarget;
@@ -46,15 +67,17 @@ function updateUiPlacement(screen) {
     theMainContentTile.children[1].textContent =
         eventTiles[screenContent].subTile;
 }
-//fetching data from local api
+// calling fetchData for fetching data from local api
 fetchData("http://localhost:8080/posts");
-// async function that fetches data from local json-server
+// fetchData an async function that fetches data from local json-server api
 async function fetchData(url, options = undefined) {
     try {
         const response = await fetch(url, options);
         if (!response.ok)
             throw Error("response is not okay");
         const data = await response.json();
+        console.log(data);
+        eventCount = data.length + 1;
         calculateStats(data);
     }
     catch (e) {
@@ -62,7 +85,7 @@ async function fetchData(url, options = undefined) {
             console.log(e.message);
     }
 }
-// function that gets data and calculate the total seats, price, and events
+// calculateStats a function that gets data and calculate the total seats, price, and events
 function calculateStats(data) {
     let totalTheoryPrice = 0, totalNumberOfSeats = 0, totalEvents = 0;
     data.map((event) => {
@@ -73,7 +96,7 @@ function calculateStats(data) {
     RenderStats(totalNumberOfSeats, totalEvents, totalTheoryPrice);
     renderGraph(data.map((evt) => evt.title), data.map((evt) => evt.seats));
 }
-//function that renders the calculated stats to the DOM
+// renderStats a function that renders the calculated stats to the DOM
 function RenderStats(seatsNumber, eventsNumber, priceNumber) {
     const totalEvents = document.querySelector("#stat-total-events");
     const totalSeats = document.querySelector("#stat-total-seats");
@@ -99,3 +122,129 @@ function renderGraph(labels, data) {
         },
     });
 }
+// addEventa a function that handels the entire form manipulation [adding events, adding variants, entire validation]
+function addEvent() {
+    let found = null;
+    const URLRegex = /^(?:(?:https?|ftp):\/\/)?(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(?:\/[^\s]*)?$/i;
+    // an event for "adding variant button"
+    addVariantButton.addEventListener("click", (e) => {
+        e.preventDefault();
+        if (variantName &&
+            variantName.value.trim() !== "" &&
+            variantQuantity &&
+            !isNaN(Number(variantQuantity.value)) && Number(variantQuantity.value) > 0 &&
+            variantType &&
+            !isNaN(Number(variantValue.value)) && Number(variantValue.value) > 0 &&
+            (variantType.value === "fixed" || variantType.value === "percentage")) {
+            found = variantArray.find((v) => v.name === variantName.value.trim());
+            if (found)
+                return;
+            variantArray = [
+                ...variantArray,
+                {
+                    id: variantArray.length,
+                    name: variantName.value.trim(),
+                    qty: Number(variantQuantity.value),
+                    value: Number(variantValue.value),
+                    type: variantType.value.trim() || "percentage",
+                },
+            ];
+            renderVariants();
+            removeVariant();
+        }
+        found = null;
+        console.log(variantArray);
+    });
+    // adding an event to track the form submit  event
+    eventForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        errorsArray = [];
+        errorSpace.innerHTML = "";
+        if (!eventName || eventName.value.trim() === "")
+            errorsArray.push({ name: "title", errorText: "Invalid name" });
+        if (!eventImage || eventImage.value.trim() === "" || !URLRegex.test(eventImage.value.trim()))
+            errorsArray.push({ name: "image", errorText: "Invalid image url" });
+        if (!eventDesc || eventDesc.value.trim() === "")
+            errorsArray.push({ name: "desc", errorText: "Invalid text" });
+        if (!eventSeats ||
+            isNaN(Number(eventSeats.value)) ||
+            Number(eventSeats.value) == 0)
+            errorsArray.push({ name: "seats", errorText: "Invalid seats number" });
+        if (!eventPrice ||
+            isNaN(Number(eventPrice.value)) ||
+            Number(eventPrice.value) <= 0)
+            errorsArray.push({ name: "price", errorText: "Invalid price number" });
+        //console.log(errorsArray);
+        if (errorsArray.length === 0) {
+            let option = {
+                method: "POST",
+                headers: {
+                    "content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    id: eventCount,
+                    title: eventName.value,
+                    image: eventImage.value,
+                    description: eventDesc.value,
+                    seats: parseInt(eventSeats.value),
+                    price: Number(eventPrice.value),
+                    variants: variantArray,
+                }),
+            };
+            fetchData("http://localhost:8080/posts", option);
+            // reset inputs
+            variantArray = [];
+            eventName.value = "";
+            eventImage.value = "";
+            eventDesc.value = "";
+            eventSeats.value = "0";
+            eventPrice.value = "0";
+        }
+        else {
+            errorSpace === null || errorSpace === void 0 ? void 0 : errorSpace.classList.toggle("is-hidden", errorsArray.length === 0);
+            errorsArray.map((err) => {
+                let content = `
+      <li style="background-color: rgb(255, 255, 255, .5); padding-inline: .5rem; padding-block: .5rem; border-radius: .4rem; display: flex; gap: 1rem; font-weight: 500;"><span style="font-weight: bold; text-transform: capitalize;">* ${err.name}: </span>${err.errorText}</li>
+        `;
+                errorSpace.innerHTML += content;
+            });
+        }
+        // console.log(errorsArray);
+    });
+}
+// renedrVariants a function that loops through the variant array and render all variants to the DOM
+function renderVariants() {
+    variantSection.innerHTML = "";
+    if (variantArray.length === 0)
+        return;
+    variantArray.map(vr => {
+        const div = document.createElement("div");
+        div.classList.add("variant-list");
+        div.id = `variant-n-${vr.id}`;
+        let content = `
+      <p class="variant-name">${vr.name}</p>
+      <p class="variant-quantity">${vr.qty}</p>
+      <p class="variant-value">${vr.value}</p>
+      <p class="variant-type">${vr.type}</p>
+      <button type="button" class="btn btn--danger" style="margin-r:auto; height: 25px;" id="remove-variant">remove</button>
+    `;
+        div.innerHTML = content;
+        variantSection.appendChild(div);
+    });
+}
+// removeVariant a function that loops through the variant array and remove the one whose remove button got clicked
+function removeVariant() {
+    variantArray.map(vr => {
+        const variantDiv = document.querySelector(`#variant-n-${vr.id}`);
+        variantDiv === null || variantDiv === void 0 ? void 0 : variantDiv.addEventListener("click", (e) => {
+            const button = e.target;
+            if (button.id === "remove-variant") {
+                const newVarriants = variantArray.filter(item => item.id !== Number(variantDiv.id.split("-")[2]));
+                variantArray = [...newVarriants];
+                renderVariants();
+            }
+        });
+    });
+}
+// calling add event to allow form functionalities to work
+addEvent();

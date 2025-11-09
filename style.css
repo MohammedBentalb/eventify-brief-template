@@ -35,7 +35,8 @@
   --shadow-lg: 0 4px 16px var(--color-shadow);
 
   /* Fonts */
-  --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+    Ubuntu, Cantarell, sans-serif;
   --font-mono: "Courier New", monospace;
 
   /* Z-index */
@@ -917,4 +918,33 @@ textarea.input {
     padding: var(--spacing-xs) var(--spacing-sm);
     font-size: 13px;
   }
+}
+
+
+.variant-list {
+  display: flex;
+  gap: 1rem;
+  flex-direction: column;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+  height: 100%;
+}
+
+.variant-list > div {
+  border: 1px solid;
+  display: grid;
+  width: 100%;
+  align-content: center;
+  grid-template-columns: repeat(5, 1fr);
+  padding-inline: 1rem;
+  padding-block: 0.2rem;
+  border-radius: 0.5rem;
+}
+
+.variant-list > div > div{
+  display: flex;
+  justify-content: end;
+  align-items: center;
+  border: none;
 }

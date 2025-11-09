@@ -81,7 +81,10 @@
                 <!--  <p class="text-muted">
                   📈 Chart will be rendered here by JavaScript
                 </p> -->
-                <canvas id="myChart" style="width: 100%; display: inline;"></canvas>
+                <canvas
+                  id="myChart"
+                  style="width: 100%; display: inline"
+                ></canvas>
               </div>
             </div>
           </section>
@@ -91,10 +94,12 @@
             <div class="screen__content">
               <form class="form" id="event-form">
                 <!-- Error messages area -->
-                <div
+                <ul
                   class="alert alert--error is-hidden"
                   id="form-errors"
-                ></div>
+                  style="list-style: none; display: flex; flex-direction: column; gap: 1rem;"
+                >
+              </ul>
 
                 <!-- Title -->
                 <div class="form__group">
@@ -106,7 +111,7 @@
                     id="event-title"
                     class="input"
                     placeholder="Enter event title"
-                    required
+  
                   />
                 </div>
 
@@ -118,6 +123,7 @@
                     id="event-image"
                     class="input"
                     placeholder="https://example.com/image.jpg"
+                    required
                   />
                 </div>
 
@@ -131,6 +137,7 @@
                     class="input"
                     placeholder="Describe the event..."
                     rows="4"
+                    required
                   ></textarea>
                 </div>
 
@@ -159,7 +166,7 @@
                     id="event-price"
                     class="input"
                     placeholder="50.00"
-                    min="0"
+                    min="1"
                     step="0.01"
                     required
                   />
@@ -181,24 +188,46 @@
                   <!-- Variant rows will be appended here by JS -->
                   <div id="variants-list" class="variants__list">
                     <!-- EXAMPLE: Students should clone this structure -->
-                    <!-- 
-                                    <div class="variant-row">
-                                        <input type="text" class="input variant-row__name" placeholder="Variant name (e.g., 'Early Bird')" />
-                                        <input type="number" class="input variant-row__qty" placeholder="Qty" min="1" />
-                                        <input type="number" class="input variant-row__value" placeholder="Value" step="0.01" />
-                                        <select class="select variant-row__type">
-                                            <option value="fixed">Fixed Price</option>
-                                            <option value="percentage">Percentage Off</option>
-                                        </select>
-                                        <button type="button" class="btn btn--danger btn--small variant-row__remove">Remove</button>
-                                    </div>
-                                    -->
+                    <div id="variants-parent" class="variant-list"></div>
+                    <div class="variant-row">
+                      <input
+                        type="text"
+                        class="input variant-row__name"
+                        placeholder="Variant name (e.g., 'Early Bird')"
+                      />
+                      <input
+                        type="number"
+                        class="input variant-row__qty"
+                        placeholder="Qty"
+                        min="1"
+                      />
+                      <input
+                        type="number"
+                        class="input variant-row__value"
+                        placeholder="Value"
+                        step="0.01"
+                        min="1"
+                      />
+                      <select class="select variant-row__type">
+                        <option value="fixed">Fixed Price</option>
+                        <option value="percentage">Percentage Off</option>
+                      </select>
+                      <!--                         <button type="button" class="btn btn--danger btn--small variant-row__remove">Remove</button>
+ -->
+                      <button
+                        type="button"
+                        class="btn btn--primary btn--small variant-row__add"
+                        id="add-variant-btn"
+                      >
+                        add
+                      </button>
+                    </div>
                   </div>
                 </fieldset>
 
                 <!-- Submit Button -->
                 <div class="form__actions">
-                  <button type="submit" class="btn btn--primary">
+                  <button type="submit" class="btn btn--primary" id="submit">
                     Create Event
                   </button>
                   <button type="reset" class="btn btn--ghost">Clear</button>
@@ -339,7 +368,8 @@
       {
         "imports": {
           "@kurkle/color": "/node_modules/@kurkle/color/dist/color.esm.js",
-          "chart.js": "/node_modules/chart.js/dist/chart.js"
+          "chart.js": "/node_modules/chart.js/dist/chart.js",
+          "moment": "/node_modules/moment/dist/moment.js"
         }
       }
     </script>
