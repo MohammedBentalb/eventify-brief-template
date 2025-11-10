@@ -72,18 +72,18 @@ function updateUiPlacement(screen) {
         eventTiles[screenContent].subTile;
 }
 // calling fetchData for fetching data from local api
-fetchData("http://localhost:8080/posts");
+fetchData("http://localhost:8080/data");
 // fetchData an async function that fetches data from local json-server api
 async function fetchData(url, options = undefined) {
     try {
         const response = await fetch(url, options);
         if (!response.ok)
             throw Error("response is not okay");
-        const data = await response.json();
-        console.log(data);
-        eventCount = data.length + 1;
-        calculateStats(data);
-        renderEvents(data);
+        const [{ posts, archive }] = (await response.json());
+        console.log(archive);
+        eventCount = posts.length + 1;
+        calculateStats(posts);
+        renderEvents(posts);
     }
     catch (e) {
         if (e instanceof Error)
