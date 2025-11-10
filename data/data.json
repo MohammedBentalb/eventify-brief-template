@@ -1,265 +1,287 @@
 {
-  "data": [
+  "posts": [
     {
-      "posts": [
+      "id": "2",
+      "title": "Tech Conference 2025",
+      "image": "https://example.com/tech-conference.jpg",
+      "description": "The biggest tech gathering of the year",
+      "seats": 200,
+      "price": 199.99,
+      "variants": [
         {
-          "id": "2",
-          "title": "Tech Conference 2025",
-          "image": "https://example.com/tech-conference.jpg",
-          "description": "The biggest tech gathering of the year",
-          "seats": 200,
-          "price": 199.99,
-          "variants": [
-            {
-              "id": 1,
-              "name": "VIP Pass",
-              "qty": 50,
-              "value": 50,
-              "type": "fixed"
-            },
-            {
-              "id": 2,
-              "name": "Early Registration",
-              "qty": 100,
-              "value": 15,
-              "type": "percentage"
-            }
-          ]
+          "id": 1,
+          "name": "VIP Pass",
+          "qty": 50,
+          "value": 50,
+          "type": "fixed"
         },
         {
-          "id": "3",
-          "title": "Art Expo",
-          "image": "https://example.com/art-expo.jpg",
-          "description": "Experience contemporary art from local artists",
-          "seats": 150,
-          "price": 29.99,
-          "variants": [
-            {
-              "id": 1,
-              "name": "Group Discount",
-              "qty": 20,
-              "value": 10,
-              "type": "percentage"
-            },
-            {
-              "id": 2,
-              "name": "Student",
-              "qty": 50,
-              "value": 5,
-              "type": "fixed"
-            }
-          ]
-        },
-        {
-          "id": "4",
-          "title": "Music Night",
-          "image": "https://example.com/music-night.jpg",
-          "description": "Live performances from top bands",
-          "seats": 80,
-          "price": 59.99,
-          "variants": [
-            {
-              "id": 1,
-              "name": "VIP Seat",
-              "qty": 10,
-              "value": 20,
-              "type": "fixed"
-            },
-            {
-              "id": 2,
-              "name": "Student Discount",
-              "qty": 20,
-              "value": 15,
-              "type": "percentage"
-            }
-          ]
-        },
-        {
-          "id": "5",
-          "title": "Food Carnival",
-          "image": "https://example.com/food-carnival.jpg",
-          "description": "Taste cuisines from around the world",
-          "seats": 120,
-          "price": 39.99,
-          "variants": [
-            {
-              "id": 1,
-              "name": "Family Pack",
-              "qty": 15,
-              "value": 30,
-              "type": "fixed"
-            },
-            {
-              "id": 2,
-              "name": "Early Bird",
-              "qty": 25,
-              "value": 10,
-              "type": "percentage"
-            }
-          ]
-        },
-        {
-          "id": "6",
-          "title": "Film Festival",
-          "image": "https://example.com/film-festival.jpg",
-          "description": "Screenings of indie and international films",
-          "seats": 90,
-          "price": 69.99,
-          "variants": [
-            {
-              "id": 1,
-              "name": "Weekend Pass",
-              "qty": 30,
-              "value": 20,
-              "type": "fixed"
-            },
-            {
-              "id": 2,
-              "name": "Student",
-              "qty": 20,
-              "value": 25,
-              "type": "percentage"
-            }
-          ]
-        },
-        {
-          "id": "7",
-          "title": "Yoga Retreat",
-          "image": "https://example.com/yoga-retreat.jpg",
-          "description": "A weekend of wellness and relaxation",
-          "seats": 50,
-          "price": 149.99,
-          "variants": [
-            {
-              "id": 1,
-              "name": "Couple Discount",
-              "qty": 10,
-              "value": 20,
-              "type": "percentage"
-            },
-            {
-              "id": 2,
-              "name": "Early Bird",
-              "qty": 15,
-              "value": 30,
-              "type": "fixed"
-            }
-          ]
-        },
-        {
-          "id": "8",
-          "title": "Marathon 2025",
-          "image": "https://example.com/marathon.jpg",
-          "description": "Run for a cause in the city marathon",
-          "seats": 500,
-          "price": 24.99,
-          "variants": [
-            {
-              "id": 1,
-              "name": "Team Discount",
-              "qty": 50,
-              "value": 10,
-              "type": "percentage"
-            },
-            {
-              "id": 2,
-              "name": "VIP Pack",
-              "qty": 20,
-              "value": 15,
-              "type": "fixed"
-            }
-          ]
-        },
-        {
-          "id": "9",
-          "title": "Gaming Expo",
-          "image": "https://example.com/gaming-expo.jpg",
-          "description": "The ultimate gaming and esports event",
-          "seats": 300,
-          "price": 89.99,
-          "variants": [
-            {
-              "id": 1,
-              "name": "VIP Access",
-              "qty": 50,
-              "value": 25,
-              "type": "fixed"
-            },
-            {
-              "id": 2,
-              "name": "Early Bird",
-              "qty": 100,
-              "value": 10,
-              "type": "percentage"
-            }
-          ]
-        },
-        {
-          "id": "10",
-          "title": "Book Fair",
-          "image": "https://example.com/book-fair.jpg",
-          "description": "Discover new books and meet authors",
-          "seats": 200,
-          "price": 14.99,
-          "variants": [
-            {
-              "id": 1,
-              "name": "Student Discount",
-              "qty": 50,
-              "value": 5,
-              "type": "fixed"
-            },
-            {
-              "id": 2,
-              "name": "Bulk Purchase",
-              "qty": 30,
-              "value": 15,
-              "type": "percentage"
-            }
-          ]
-        },
-        {
-          "id": 11,
-          "title": "modern css",
-          "image": "https://github.com/MohammedBentalb",
-          "description": "css is the future",
-          "seats": 50,
-          "price": 2,
-          "variants": [
-            {
-              "id": 0,
-              "name": "married",
-              "qty": 5,
-              "value": 10,
-              "type": "percentage"
-            }
-          ]
+          "id": 2,
+          "name": "Early Registration",
+          "qty": 100,
+          "value": 15,
+          "type": "percentage"
         }
-      ],
-      "archive": [
+      ]
+    },
+    {
+      "id": "3",
+      "title": "Art Expo",
+      "image": "https://example.com/art-expo.jpg",
+      "description": "Experience contemporary art from local artists",
+      "seats": 150,
+      "price": 29.99,
+      "variants": [
         {
-          "id": "1",
-          "title": "Summer Festival",
-          "image": "https://example.com/summer-festival.jpg",
-          "description": "Join us for an amazing summer festival",
-          "seats": 100,
-          "price": 49.99,
-          "variants": [
-            {
-              "id": 1,
-              "name": "Early Bird",
-              "qty": 20,
-              "value": 10,
-              "type": "fixed"
-            },
-            {
-              "id": 2,
-              "name": "Student",
-              "qty": 30,
-              "value": 20,
-              "type": "percentage"
-            }
-          ]
+          "id": 1,
+          "name": "Group Discount",
+          "qty": 20,
+          "value": 10,
+          "type": "percentage"
+        },
+        {
+          "id": 2,
+          "name": "Student",
+          "qty": 50,
+          "value": 5,
+          "type": "fixed"
+        }
+      ]
+    },
+    {
+      "id": "4",
+      "title": "Music Night",
+      "image": "https://example.com/music-night.jpg",
+      "description": "Live performances from top bands",
+      "seats": 80,
+      "price": 59.99,
+      "variants": [
+        {
+          "id": 1,
+          "name": "VIP Seat",
+          "qty": 10,
+          "value": 20,
+          "type": "fixed"
+        },
+        {
+          "id": 2,
+          "name": "Student Discount",
+          "qty": 20,
+          "value": 15,
+          "type": "percentage"
+        }
+      ]
+    },
+    {
+      "id": "5",
+      "title": "Food Carnival",
+      "image": "https://example.com/food-carnival.jpg",
+      "description": "Taste cuisines from around the world",
+      "seats": 120,
+      "price": 39.99,
+      "variants": [
+        {
+          "id": 1,
+          "name": "Family Pack",
+          "qty": 15,
+          "value": 30,
+          "type": "fixed"
+        },
+        {
+          "id": 2,
+          "name": "Early Bird",
+          "qty": 25,
+          "value": 10,
+          "type": "percentage"
+        }
+      ]
+    },
+    {
+      "id": "6",
+      "title": "Film Festival",
+      "image": "https://example.com/film-festival.jpg",
+      "description": "Screenings of indie and international films",
+      "seats": 90,
+      "price": 69.99,
+      "variants": [
+        {
+          "id": 1,
+          "name": "Weekend Pass",
+          "qty": 30,
+          "value": 20,
+          "type": "fixed"
+        },
+        {
+          "id": 2,
+          "name": "Student",
+          "qty": 20,
+          "value": 25,
+          "type": "percentage"
+        }
+      ]
+    },
+    {
+      "id": "7",
+      "title": "Yoga Retreat",
+      "image": "https://example.com/yoga-retreat.jpg",
+      "description": "A weekend of wellness and relaxation",
+      "seats": 50,
+      "price": 149.99,
+      "variants": [
+        {
+          "id": 1,
+          "name": "Couple Discount",
+          "qty": 10,
+          "value": 20,
+          "type": "percentage"
+        },
+        {
+          "id": 2,
+          "name": "Early Bird",
+          "qty": 15,
+          "value": 30,
+          "type": "fixed"
+        }
+      ]
+    },
+    {
+      "id": "8",
+      "title": "Marathon 2025",
+      "image": "https://example.com/marathon.jpg",
+      "description": "Run for a cause in the city marathon",
+      "seats": 500,
+      "price": 24.99,
+      "variants": [
+        {
+          "id": 1,
+          "name": "Team Discount",
+          "qty": 50,
+          "value": 10,
+          "type": "percentage"
+        },
+        {
+          "id": 2,
+          "name": "VIP Pack",
+          "qty": 20,
+          "value": 15,
+          "type": "fixed"
+        }
+      ]
+    },
+    {
+      "id": "9",
+      "title": "Gaming Expo",
+      "image": "https://example.com/gaming-expo.jpg",
+      "description": "The ultimate gaming and esports event",
+      "seats": 300,
+      "price": 89.99,
+      "variants": [
+        {
+          "id": 1,
+          "name": "VIP Access",
+          "qty": 50,
+          "value": 25,
+          "type": "fixed"
+        },
+        {
+          "id": 2,
+          "name": "Early Bird",
+          "qty": 100,
+          "value": 10,
+          "type": "percentage"
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "title": "Modern css",
+      "image": "https://www.youtube.com/",
+      "description": "modern css is the future",
+      "seats": 65,
+      "price": 4.62,
+      "variants": [
+        {
+          "id": 0,
+          "name": "married",
+          "qty": 5,
+          "value": 3,
+          "type": "fixed"
+        }
+      ]
+    },
+    {
+      "id": 11,
+      "title": "MERN",
+      "image": "https://www.youtube.com/",
+      "description": "MERN IS THE FUTURE",
+      "seats": 6,
+      "price": 50,
+      "variants": []
+    }
+  ],
+  "archive": [
+    {
+      "id": "1",
+      "title": "Summer Festival",
+      "image": "https://example.com/summer-festival.jpg",
+      "description": "Join us for an amazing summer festival",
+      "seats": 100,
+      "price": 49.99,
+      "variants": [
+        {
+          "id": 1,
+          "name": "Early Bird",
+          "qty": 20,
+          "value": 10,
+          "type": "fixed"
+        },
+        {
+          "id": 2,
+          "name": "Student",
+          "qty": 30,
+          "value": 20,
+          "type": "percentage"
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "title": "Modern css",
+      "image": "https://www.youtube.com/",
+      "description": "modern css is the future",
+      "seats": 65,
+      "price": 4.62,
+      "variants": [
+        {
+          "id": 0,
+          "name": "married",
+          "qty": 5,
+          "value": 3,
+          "type": "fixed"
+        }
+      ]
+    },
+    {
+      "id": "10",
+      "title": "Book Fair",
+      "image": "https://example.com/book-fair.jpg",
+      "description": "Discover new books and meet authors",
+      "seats": 200,
+      "price": 14.99,
+      "variants": [
+        {
+          "id": 1,
+          "name": "Student Discount",
+          "qty": 50,
+          "value": 5,
+          "type": "fixed"
+        },
+        {
+          "id": 2,
+          "name": "Bulk Purchase",
+          "qty": 30,
+          "value": 15,
+          "type": "percentage"
         }
       ]
     }

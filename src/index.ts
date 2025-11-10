@@ -90,6 +90,8 @@ type eventType = {
 type ErrorType = { name: string; errorText: string };
 type screenContentType = keyof typeof eventTiles;
 
+
+
 // retrieving the content displayed keyword from local storage of setting it to be equal to stats by default
 let screenContent: screenContentType =
   (localStorage.getItem("screenContent") as screenContentType) || "stats";
@@ -109,6 +111,7 @@ sideNavButtons.forEach((element) => {
   });
 });
 
+
 // function that set the avtive button as wel as the visible section, and changing the title and sub title of the heading
 function updateUiPlacement(screen: screenContentType) {
   // change the button in the aside
@@ -127,15 +130,17 @@ function updateUiPlacement(screen: screenContentType) {
 }
 
 // calling fetchData for fetching data from local api
-fetchData("http://localhost:8080/data");
+fetchData("http://localhost:8080/posts", "http://localhost:8080/archive");
 
 // fetchData an async function that fetches data from local json-server api
-async function fetchData(url: string, options: any | undefined = undefined) {
+async function fetchData(url: string, url2:string, options: any = undefined, options2: any = undefined) {
   try {
     const response = await fetch(url, options);
-    if (!response.ok) throw Error("response is not okay");
-    const [{posts, archive}] = (await response.json());
-    console.log(archive);
+    const response2 = await fetch(url2, options2);
+    const posts = (await response.json());
+    console.log(posts)
+    if (!response.ok || !response2.ok) throw Error("response is not okay");
+
     eventCount = posts.length + 1;
     calculateStats(posts);
     renderEvents(posts);
@@ -284,7 +289,7 @@ function addEvent() {
         }),
       };
 
-      fetchData("http://localhost:8080/posts", option);
+      fetchData("http://localhost:8080/posts","http://localhost:8080/archive", option);
 
       // reset inputs
       variantArray = [];
@@ -432,7 +437,25 @@ function trackShowenEvent(id: number, arr: eventType[]) {
 }
 
 function removeEvent(arr: eventType[], id: number) {
-  let newArr = [...arr.filter((ev) => ev.id !== id)];
+  let [foundEvent] = arr.filter((ev) => ev.id === id);
+  let newArr = arr.filter((ev) => ev.id !== id);
+
+  let option = {
+     method: "DELETE",
+     headers: {
+       "content-Type": 'application/json'
+     }
+  }
+  
+  let option2 = {
+     method: "POST",
+     headers: {
+       "content-Type": 'application/json'
+     },
+     body: JSON.stringify(foundEvent)
+  }
+
+   fetchData(`http://localhost:8080/posts/${id}`, "http://localhost:8080/archive", option, option2);
   return newArr;
 }
 
@@ -464,5 +487,3 @@ function sortEvents(events: eventType[], condition: string) {
   return sorted;
 }
 
-// track
-// add delete
