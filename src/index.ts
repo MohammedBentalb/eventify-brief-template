@@ -1,34 +1,51 @@
 import * as ChartJs from "chart.js";
 
 // @ts-ignore
-ChartJs.Chart.register.apply(null,Object.values(ChartJs).filter((chartClass: any) => chartClass.id));
+ChartJs.Chart.register.apply(
+  null,
+  Object.values(ChartJs).filter((chartClass: any) => chartClass.id)
+);
 
 const theMainContentTile = document.querySelector(".page-header__content")!;
-const sideNavButtons = document.querySelectorAll<HTMLButtonElement>("button[data-screen]");
-const mainSection = document.querySelectorAll<HTMLDListElement>( "section[data-screen]");
+const sideNavButtons = document.querySelectorAll<HTMLButtonElement>(
+  "button[data-screen]"
+);
+const mainSection = document.querySelectorAll<HTMLDListElement>(
+  "section[data-screen]"
+);
 
 // form inputs
 const eventForm = document.querySelector<HTMLFormElement>("#event-form")!;
 const eventName = document.querySelector<HTMLInputElement>("#event-title")!;
 const eventImage = document.querySelector<HTMLInputElement>("#event-image")!;
-const eventDesc = document.querySelector<HTMLTextAreaElement>("#event-description")!;
+const eventDesc =
+  document.querySelector<HTMLTextAreaElement>("#event-description")!;
 const eventSeats = document.querySelector<HTMLInputElement>("#event-seats")!;
 const eventPrice = document.querySelector<HTMLInputElement>("#event-price")!;
 
 // variant
-const variantName = document.querySelector<HTMLInputElement>(".variant-row__name")!;
-const variantQuantity = document.querySelector<HTMLInputElement>(".variant-row__qty")!;
-const variantValue = document.querySelector<HTMLInputElement>(".variant-row__value")!;
-const variantType = document.querySelector<HTMLInputElement>(".variant-row__type")!;
+const variantName =
+  document.querySelector<HTMLInputElement>(".variant-row__name")!;
+const variantQuantity =
+  document.querySelector<HTMLInputElement>(".variant-row__qty")!;
+const variantValue = document.querySelector<HTMLInputElement>(
+  ".variant-row__value"
+)!;
+const variantType =
+  document.querySelector<HTMLInputElement>(".variant-row__type")!;
 const addVariantButton = document.querySelector("#add-variant-btn")!;
 const variantSection = document.querySelector("#variants-parent")!;
-
 
 let errorsArray: ErrorType[] = [];
 let variantArray: eventType["variants"] | [] = [];
 
 // error form field
 const errorSpace = document.querySelector("#form-errors")!;
+
+// show events section
+const eventsTable = document.querySelector(".table__body")!;
+const sortInput = document.querySelector<HTMLSelectElement>("#sort-events");
+const searchInput = document.querySelector<HTMLInputElement>("#search-events");
 
 // eventTiles a variable that contans all titles for each section for quicka access
 const eventTiles = {
@@ -121,6 +138,7 @@ async function fetchData(url: string, options: any | undefined = undefined) {
     console.log(data);
     eventCount = data.length + 1;
     calculateStats(data);
+    renderEvents(data);
   } catch (e) {
     if (e instanceof Error) console.log(e.message);
   }
@@ -181,7 +199,7 @@ function renderGraph(labels: string[], data: number[]) {
 // addEventa a function that handels the entire form manipulation [adding events, adding variants, entire validation]
 function addEvent() {
   let found = null;
-  const URLRegex = /^(?:(?:https?|ftp):\/\/)?(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(?:\/[^\s]*)?$/i
+  const URLRegex =  /^(?:(?:https?|ftp):\/\/)?(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(?:\/[^\s]*)?$/i;
   // an event for "adding variant button"
   addVariantButton.addEventListener("click", (e) => {
     e.preventDefault();
@@ -189,9 +207,11 @@ function addEvent() {
       variantName &&
       variantName.value.trim() !== "" &&
       variantQuantity &&
-      !isNaN(Number(variantQuantity.value)) && Number(variantQuantity.value) > 0 &&
+      !isNaN(Number(variantQuantity.value)) &&
+      Number(variantQuantity.value) > 0 &&
       variantType &&
-      !isNaN(Number(variantValue.value)) && Number(variantValue.value) > 0 &&
+      !isNaN(Number(variantValue.value)) &&
+      Number(variantValue.value) > 0 &&
       (variantType.value === "fixed" || variantType.value === "percentage")
     ) {
       found = variantArray.find((v) => v.name === variantName.value.trim());
@@ -208,24 +228,27 @@ function addEvent() {
         },
       ];
 
-    
-      renderVariants()
-      removeVariant()
+      renderVariants();
+      removeVariant();
     }
 
     found = null;
     console.log(variantArray);
   });
-  
+
   // adding an event to track the form submit  event
   eventForm.addEventListener("submit", (e) => {
     e.preventDefault();
     errorsArray = [];
-     errorSpace.innerHTML = "";
+    errorSpace.innerHTML = "";
 
     if (!eventName || eventName.value.trim() === "")
       errorsArray.push({ name: "title", errorText: "Invalid name" });
-    if (!eventImage || eventImage.value.trim() === "" || !URLRegex.test(eventImage.value.trim()))
+    if (
+      !eventImage ||
+      eventImage.value.trim() === "" ||
+      !URLRegex.test(eventImage.value.trim())
+    )
       errorsArray.push({ name: "image", errorText: "Invalid image url" });
     if (!eventDesc || eventDesc.value.trim() === "")
       errorsArray.push({ name: "desc", errorText: "Invalid text" });
@@ -286,16 +309,16 @@ function addEvent() {
 }
 
 // renedrVariants a function that loops through the variant array and render all variants to the DOM
-function renderVariants(){
-  variantSection.innerHTML = ""
-  if(variantArray.length === 0) return
+function renderVariants() {
+  variantSection.innerHTML = "";
+  if (variantArray.length === 0) return;
 
-  variantArray.map(vr => {
+  variantArray.map((vr) => {
     const div = document.createElement("div");
-    
+
     div.classList.add("variant-list");
     div.id = `variant-n-${vr.id}`;
-    
+
     let content = `
       <p class="variant-name">${vr.name}</p>
       <p class="variant-quantity">${vr.qty}</p>
@@ -305,26 +328,141 @@ function renderVariants(){
     `;
     div.innerHTML = content;
     variantSection.appendChild(div);
-    
-
-  })
+  });
 }
 
 // removeVariant a function that loops through the variant array and remove the one whose remove button got clicked
 function removeVariant() {
-  variantArray.map(vr => {
-    const variantDiv = document.querySelector(`#variant-n-${vr.id}`)
+  variantArray.map((vr) => {
+    const variantDiv = document.querySelector(`#variant-n-${vr.id}`);
 
     variantDiv?.addEventListener("click", (e) => {
-      const button = e.target as HTMLButtonElement
-      if(button.id === "remove-variant"){
-        const newVarriants = variantArray.filter(item => item.id !== Number(variantDiv.id.split("-")[2]))
-        variantArray = [...newVarriants]
-        renderVariants()
+      const button = e.target as HTMLButtonElement;
+      if (button.id === "remove-variant") {
+        const newVarriants = variantArray.filter(
+          (item) => item.id !== Number(variantDiv.id.split("-")[2])
+        );
+        variantArray = [...newVarriants];
+        renderVariants();
       }
-    })
-  })
+    });
+  });
 }
 
 // calling add event to allow form functionalities to work
 addEvent();
+
+function renderEvents(events: eventType[]) {
+  let result: eventType[] = [...events];
+  eventsTable.innerHTML = ""
+  showEvents(result);
+
+  searchInput?.addEventListener("change", function () {
+    if (searchInput.value.trim() !== "") {
+      let newVersion = result.filter(
+        (r) =>
+          r.title.toLowerCase() === searchInput.value.trim().toLocaleLowerCase()
+      );
+      eventsTable.innerHTML = "";
+      showEvents(newVersion);
+    } else {
+      showEvents(result);
+    }
+  });
+
+  sortInput?.addEventListener("change", function () {
+    result = [...sortEvents(result, sortInput.value.trim())];
+    eventsTable.innerHTML = "";
+    showEvents(result);
+  });
+}
+
+function showEvents(arr: eventType[]) {
+  arr.map((ev) => {
+    const tr = document.createElement("tr")
+    tr.setAttribute("data-event-id", ev.id.toString()) 
+    tr.classList.add("table__row");
+    let content = `
+    <td>${ev.id}</td>
+    <td>${ev.title}</td>
+    <td>${ev.seats}</td>
+    <td>$${ev.price}</td>
+      <td><span class="badge">${ev.variants.length}</span></td>
+      <td>
+        <button
+        class="btn btn--small"
+        data-action="details"
+        data-event-id="1"
+        >
+          Details
+          </button>
+          <button
+          class="btn btn--small"
+          data-action="edit"
+          data-event-id="1"
+        >
+        Edit
+        </button>
+        <button
+          class="btn btn--danger btn--small"
+          data-action="archive"
+          data-event-id="1"
+          >
+          Delete
+          </button>
+          </td>
+    `;
+
+    tr.innerHTML= content;
+    eventsTable.appendChild(tr)
+    trackShowenEvent(ev.id, arr)
+  });
+}
+
+function trackShowenEvent(id: number, arr: eventType[]) {
+  const element = document.querySelector<HTMLTableRowElement>(`tr[data-event-id="${id}"]`);
+  element?.addEventListener("click", function(e) {
+      const target = e.target as HTMLButtonElement
+      if (target.dataset.action === "archive"){
+        const newArr = removeEvent(arr, id);
+        eventsTable.innerHTML = ""
+        showEvents(newArr)
+      }
+  })
+}
+
+function removeEvent(arr: eventType[], id: number) {
+  let newArr = [...arr.filter((ev) => ev.id !== id)];
+  return newArr;
+}
+
+function sortEvents(events: eventType[], condition: string) {
+  let sorted = [...events];
+  let finalResult;
+
+  for (let i = 0; i < sorted.length - 1; i++) {
+    for (let j = 0; j < sorted.length - 1 - i; j++) {
+      if (condition === "title-asc")
+        finalResult = sorted[j].title.localeCompare(sorted[j + 1].title) > 0;
+      if (condition === "title-desc")
+        finalResult = sorted[j].title.localeCompare(sorted[j + 1].title) < 0;
+      if (condition === "price-asc")
+        finalResult = sorted[j].price > sorted[j + 1].price;
+      if (condition === "price-desc")
+        finalResult = sorted[j].price < sorted[j + 1].price;
+      if (condition === "seats-asc")
+        finalResult = sorted[j].seats > sorted[j + 1].seats;
+
+      if (finalResult) {
+        let tmp = sorted[j];
+        sorted[j] = sorted[j + 1];
+        sorted[j + 1] = tmp;
+      }
+    }
+  }
+
+  return sorted;
+}
+
+// track
+// add delete

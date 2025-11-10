@@ -22,6 +22,10 @@ let errorsArray = [];
 let variantArray = [];
 // error form field
 const errorSpace = document.querySelector("#form-errors");
+// show events section
+const eventsTable = document.querySelector(".table__body");
+const sortInput = document.querySelector("#sort-events");
+const searchInput = document.querySelector("#search-events");
 // eventTiles a variable that contans all titles for each section for quicka access
 const eventTiles = {
     stats: {
@@ -79,6 +83,7 @@ async function fetchData(url, options = undefined) {
         console.log(data);
         eventCount = data.length + 1;
         calculateStats(data);
+        renderEvents(data);
     }
     catch (e) {
         if (e instanceof Error)
@@ -132,9 +137,11 @@ function addEvent() {
         if (variantName &&
             variantName.value.trim() !== "" &&
             variantQuantity &&
-            !isNaN(Number(variantQuantity.value)) && Number(variantQuantity.value) > 0 &&
+            !isNaN(Number(variantQuantity.value)) &&
+            Number(variantQuantity.value) > 0 &&
             variantType &&
-            !isNaN(Number(variantValue.value)) && Number(variantValue.value) > 0 &&
+            !isNaN(Number(variantValue.value)) &&
+            Number(variantValue.value) > 0 &&
             (variantType.value === "fixed" || variantType.value === "percentage")) {
             found = variantArray.find((v) => v.name === variantName.value.trim());
             if (found)
@@ -162,7 +169,9 @@ function addEvent() {
         errorSpace.innerHTML = "";
         if (!eventName || eventName.value.trim() === "")
             errorsArray.push({ name: "title", errorText: "Invalid name" });
-        if (!eventImage || eventImage.value.trim() === "" || !URLRegex.test(eventImage.value.trim()))
+        if (!eventImage ||
+            eventImage.value.trim() === "" ||
+            !URLRegex.test(eventImage.value.trim()))
             errorsArray.push({ name: "image", errorText: "Invalid image url" });
         if (!eventDesc || eventDesc.value.trim() === "")
             errorsArray.push({ name: "desc", errorText: "Invalid text" });
@@ -217,7 +226,7 @@ function renderVariants() {
     variantSection.innerHTML = "";
     if (variantArray.length === 0)
         return;
-    variantArray.map(vr => {
+    variantArray.map((vr) => {
         const div = document.createElement("div");
         div.classList.add("variant-list");
         div.id = `variant-n-${vr.id}`;
@@ -234,12 +243,12 @@ function renderVariants() {
 }
 // removeVariant a function that loops through the variant array and remove the one whose remove button got clicked
 function removeVariant() {
-    variantArray.map(vr => {
+    variantArray.map((vr) => {
         const variantDiv = document.querySelector(`#variant-n-${vr.id}`);
         variantDiv === null || variantDiv === void 0 ? void 0 : variantDiv.addEventListener("click", (e) => {
             const button = e.target;
             if (button.id === "remove-variant") {
-                const newVarriants = variantArray.filter(item => item.id !== Number(variantDiv.id.split("-")[2]));
+                const newVarriants = variantArray.filter((item) => item.id !== Number(variantDiv.id.split("-")[2]));
                 variantArray = [...newVarriants];
                 renderVariants();
             }
@@ -248,3 +257,104 @@ function removeVariant() {
 }
 // calling add event to allow form functionalities to work
 addEvent();
+function renderEvents(events) {
+    let result = [...events];
+    eventsTable.innerHTML = "";
+    showEvents(result);
+    searchInput === null || searchInput === void 0 ? void 0 : searchInput.addEventListener("change", function () {
+        if (searchInput.value.trim() !== "") {
+            let newVersion = result.filter((r) => r.title.toLowerCase() === searchInput.value.trim().toLocaleLowerCase());
+            eventsTable.innerHTML = "";
+            showEvents(newVersion);
+        }
+        else {
+            showEvents(result);
+        }
+    });
+    sortInput === null || sortInput === void 0 ? void 0 : sortInput.addEventListener("change", function () {
+        result = [...sortEvents(result, sortInput.value.trim())];
+        eventsTable.innerHTML = "";
+        showEvents(result);
+    });
+}
+function showEvents(arr) {
+    arr.map((ev) => {
+        const tr = document.createElement("tr");
+        tr.setAttribute("data-event-id", ev.id.toString());
+        tr.classList.add("table__row");
+        let content = `
+    <td>${ev.id}</td>
+    <td>${ev.title}</td>
+    <td>${ev.seats}</td>
+    <td>$${ev.price}</td>
+      <td><span class="badge">${ev.variants.length}</span></td>
+      <td>
+        <button
+        class="btn btn--small"
+        data-action="details"
+        data-event-id="1"
+        >
+          Details
+          </button>
+          <button
+          class="btn btn--small"
+          data-action="edit"
+          data-event-id="1"
+        >
+        Edit
+        </button>
+        <button
+          class="btn btn--danger btn--small"
+          data-action="archive"
+          data-event-id="1"
+          >
+          Delete
+          </button>
+          </td>
+    `;
+        tr.innerHTML = content;
+        eventsTable.appendChild(tr);
+        trackShowenEvent(ev.id, arr);
+    });
+}
+function trackShowenEvent(id, arr) {
+    const element = document.querySelector(`tr[data-event-id="${id}"]`);
+    element === null || element === void 0 ? void 0 : element.addEventListener("click", function (e) {
+        const target = e.target;
+        if (target.dataset.action === "archive") {
+            const newArr = removeEvent(arr, id);
+            eventsTable.innerHTML = "";
+            showEvents(newArr);
+        }
+    });
+}
+function removeEvent(arr, id) {
+    let newArr = [...arr.filter((ev) => ev.id !== id)];
+    return newArr;
+}
+function sortEvents(events, condition) {
+    let sorted = [...events];
+    let finalResult;
+    for (let i = 0; i < sorted.length - 1; i++) {
+        for (let j = 0; j < sorted.length - 1 - i; j++) {
+            if (condition === "title-asc")
+                finalResult = sorted[j].title.localeCompare(sorted[j + 1].title) > 0;
+            if (condition === "title-desc")
+                finalResult = sorted[j].title.localeCompare(sorted[j + 1].title) < 0;
+            if (condition === "price-asc")
+                finalResult = sorted[j].price > sorted[j + 1].price;
+            if (condition === "price-desc")
+                finalResult = sorted[j].price < sorted[j + 1].price;
+            if (condition === "seats-asc")
+                finalResult = sorted[j].seats > sorted[j + 1].seats;
+            if (finalResult) {
+                let tmp = sorted[j];
+                sorted[j] = sorted[j + 1];
+                sorted[j + 1] = tmp;
+            }
+        }
+    }
+    return sorted;
+}
+// track
+// add delete
