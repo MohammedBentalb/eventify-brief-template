@@ -90,8 +90,6 @@ type eventType = {
 type ErrorType = { name: string; errorText: string };
 type screenContentType = keyof typeof eventTiles;
 
-
-
 // retrieving the content displayed keyword from local storage of setting it to be equal to stats by default
 let screenContent: screenContentType =
   (localStorage.getItem("screenContent") as screenContentType) || "stats";
@@ -110,7 +108,6 @@ sideNavButtons.forEach((element) => {
     updateUiPlacement(screenContent);
   });
 });
-
 
 // function that set the avtive button as wel as the visible section, and changing the title and sub title of the heading
 function updateUiPlacement(screen: screenContentType) {
@@ -133,12 +130,17 @@ function updateUiPlacement(screen: screenContentType) {
 fetchData("http://localhost:8080/posts", "http://localhost:8080/archive");
 
 // fetchData an async function that fetches data from local json-server api
-async function fetchData(url: string, url2:string, options: any = undefined, options2: any = undefined) {
+async function fetchData(
+  url: string,
+  url2: string,
+  options: any = undefined,
+  options2: any = undefined
+) {
   try {
     const response = await fetch(url, options);
     const response2 = await fetch(url2, options2);
-    const posts = (await response.json());
-    console.log(posts)
+    const posts = await response.json();
+    console.log(posts);
     if (!response.ok || !response2.ok) throw Error("response is not okay");
 
     eventCount = posts.length + 1;
@@ -204,7 +206,8 @@ function renderGraph(labels: string[], data: number[]) {
 // addEventa a function that handels the entire form manipulation [adding events, adding variants, entire validation]
 function addEvent() {
   let found = null;
-  const URLRegex =  /^(?:(?:https?|ftp):\/\/)?(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(?:\/[^\s]*)?$/i;
+  const URLRegex =
+    /^(?:(?:https?|ftp):\/\/)?(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(?:\/[^\s]*)?$/i;
   // an event for "adding variant button"
   addVariantButton.addEventListener("click", (e) => {
     e.preventDefault();
@@ -289,7 +292,11 @@ function addEvent() {
         }),
       };
 
-      fetchData("http://localhost:8080/posts","http://localhost:8080/archive", option);
+      fetchData(
+        "http://localhost:8080/posts",
+        "http://localhost:8080/archive",
+        option
+      );
 
       // reset inputs
       variantArray = [];
@@ -359,7 +366,7 @@ addEvent();
 
 function renderEvents(events: eventType[]) {
   let result: eventType[] = [...events];
-  eventsTable.innerHTML = ""
+  eventsTable.innerHTML = "";
   showEvents(result);
 
   searchInput?.addEventListener("change", function () {
@@ -384,8 +391,8 @@ function renderEvents(events: eventType[]) {
 
 function showEvents(arr: eventType[]) {
   arr.map((ev) => {
-    const tr = document.createElement("tr")
-    tr.setAttribute("data-event-id", ev.id.toString()) 
+    const tr = document.createElement("tr");
+    tr.setAttribute("data-event-id", ev.id.toString());
     tr.classList.add("table__row");
     let content = `
     <td>${ev.id}</td>
@@ -418,22 +425,37 @@ function showEvents(arr: eventType[]) {
           </td>
     `;
 
-    tr.innerHTML= content;
-    eventsTable.appendChild(tr)
-    trackShowenEvent(ev.id, arr)
+    tr.innerHTML = content;
+    eventsTable.appendChild(tr);
+    trackShowenEvent(ev.id, arr);
   });
+  5;
 }
 
 function trackShowenEvent(id: number, arr: eventType[]) {
   const element = document.querySelector<HTMLTableRowElement>(`tr[data-event-id="${id}"]`);
-  element?.addEventListener("click", function(e) {
-      const target = e.target as HTMLButtonElement
-      if (target.dataset.action === "archive"){
-        const newArr = removeEvent(arr, id);
-        eventsTable.innerHTML = ""
-        showEvents(newArr)
-      }
-  })
+  const modal = document.querySelector("#event-modal")!;
+
+  modal.addEventListener("click", (e) => {
+    const button = e.target as HTMLDivElement;
+    if (button.dataset.action === "close-modal") {
+      showEventDetails(Number(id), false, arr)
+    }
+  });
+
+  element?.addEventListener("click", function (e) {
+    const target = e.target as HTMLButtonElement;
+    if (target.dataset.action === "archive") {
+      const newArr = removeEvent(arr, id);
+      eventsTable.innerHTML = "";
+      showEvents(newArr);
+    }
+    if (target.dataset.action === "details") {
+      console.log("ddddd");
+      showEventDetails(Number(id), true, arr);
+    }
+    
+  });
 }
 
 function removeEvent(arr: eventType[], id: number) {
@@ -441,21 +463,26 @@ function removeEvent(arr: eventType[], id: number) {
   let newArr = arr.filter((ev) => ev.id !== id);
 
   let option = {
-     method: "DELETE",
-     headers: {
-       "content-Type": 'application/json'
-     }
-  }
-  
-  let option2 = {
-     method: "POST",
-     headers: {
-       "content-Type": 'application/json'
-     },
-     body: JSON.stringify(foundEvent)
-  }
+    method: "DELETE",
+    headers: {
+      "content-Type": "application/json",
+    },
+  };
 
-   fetchData(`http://localhost:8080/posts/${id}`, "http://localhost:8080/archive", option, option2);
+  let option2 = {
+    method: "POST",
+    headers: {
+      "content-Type": "application/json",
+    },
+    body: JSON.stringify(foundEvent),
+  };
+
+  fetchData(
+    `http://localhost:8080/posts/${id}`,
+    "http://localhost:8080/archive",
+    option,
+    option2
+  );
   return newArr;
 }
 
@@ -487,3 +514,54 @@ function sortEvents(events: eventType[], condition: string) {
   return sorted;
 }
 
+function showEventDetails(id: number, show: boolean, arr: eventType[]) {
+  const modal = document.querySelector("#event-modal")!;
+  const modalBody = document.querySelector("#modal-body")!;
+
+  if(!show){
+    modalBody.innerHTML = ""
+    modal.classList.add("is-hidden")
+    return
+  }
+
+  let [ev] = arr.filter((e) => Number(e.id) === id);
+  console.log(ev);
+  const ul = document.createElement("ul");
+  const h2 = document.createElement("h2");
+  const h3 = document.createElement("h3");
+  const p = document.createElement("p");
+
+  ul.style.listStyle = "none";
+  ul.style.display = "flex";
+  ul.style.flexDirection = "column";
+  ul.style.gap = "1rem";
+
+  h2.textContent = ev.title;
+  p.textContent = ev.description;
+  h3.textContent = "Exclusivity🎉";
+
+  modalBody.appendChild(h2);
+  modalBody.appendChild(p);
+  modalBody.appendChild(h3);
+
+  ev.variants.map((v) => {
+    console.log("rrrr");
+    let li = document.createElement("li");
+    li.style = "display: flex; gap: .5rem; align-items: center";
+
+    let liContent = `
+      <h4>- ${v.name}:</h4>
+      <p>${v.qty}<span style="font-weight: 500;"> People</span></p>
+      <p>${v.value}<span style="font-weight: 500;">${
+      v.type === "percentage" ? "%" : " fixed"
+    } reduction</span></p>
+      `;
+
+    li.innerHTML += liContent;
+    ul.appendChild(li);
+  });
+
+  ul.innerHTML += `<img src="https://picsum.photos/200" alt="" width="200px" style="border-radius: 15px;">`;
+  modalBody.appendChild(ul);
+  modal.classList.remove("is-hidden");
+}

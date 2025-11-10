@@ -78,7 +78,7 @@ async function fetchData(url, url2, options = undefined, options2 = undefined) {
     try {
         const response = await fetch(url, options);
         const response2 = await fetch(url2, options2);
-        const posts = (await response.json());
+        const posts = await response.json();
         console.log(posts);
         if (!response.ok || !response2.ok)
             throw Error("response is not okay");
@@ -317,15 +317,27 @@ function showEvents(arr) {
         eventsTable.appendChild(tr);
         trackShowenEvent(ev.id, arr);
     });
+    5;
 }
 function trackShowenEvent(id, arr) {
     const element = document.querySelector(`tr[data-event-id="${id}"]`);
+    const modal = document.querySelector("#event-modal");
+    modal.addEventListener("click", (e) => {
+        const button = e.target;
+        if (button.dataset.action === "close-modal") {
+            showEventDetails(Number(id), false, arr);
+        }
+    });
     element === null || element === void 0 ? void 0 : element.addEventListener("click", function (e) {
         const target = e.target;
         if (target.dataset.action === "archive") {
             const newArr = removeEvent(arr, id);
             eventsTable.innerHTML = "";
             showEvents(newArr);
+        }
+        if (target.dataset.action === "details") {
+            console.log("ddddd");
+            showEventDetails(Number(id), true, arr);
         }
     });
 }
@@ -335,15 +347,15 @@ function removeEvent(arr, id) {
     let option = {
         method: "DELETE",
         headers: {
-            "content-Type": 'application/json'
-        }
+            "content-Type": "application/json",
+        },
     };
     let option2 = {
         method: "POST",
         headers: {
-            "content-Type": 'application/json'
+            "content-Type": "application/json",
         },
-        body: JSON.stringify(foundEvent)
+        body: JSON.stringify(foundEvent),
     };
     fetchData(`http://localhost:8080/posts/${id}`, "http://localhost:8080/archive", option, option2);
     return newArr;
@@ -371,4 +383,44 @@ function sortEvents(events, condition) {
         }
     }
     return sorted;
+}
+function showEventDetails(id, show, arr) {
+    const modal = document.querySelector("#event-modal");
+    const modalBody = document.querySelector("#modal-body");
+    if (!show) {
+        modalBody.innerHTML = "";
+        modal.classList.add("is-hidden");
+        return;
+    }
+    let [ev] = arr.filter((e) => Number(e.id) === id);
+    console.log(ev);
+    const ul = document.createElement("ul");
+    const h2 = document.createElement("h2");
+    const h3 = document.createElement("h3");
+    const p = document.createElement("p");
+    ul.style.listStyle = "none";
+    ul.style.display = "flex";
+    ul.style.flexDirection = "column";
+    ul.style.gap = "1rem";
+    h2.textContent = ev.title;
+    p.textContent = ev.description;
+    h3.textContent = "Exclusivity🎉";
+    modalBody.appendChild(h2);
+    modalBody.appendChild(p);
+    modalBody.appendChild(h3);
+    ev.variants.map((v) => {
+        console.log("rrrr");
+        let li = document.createElement("li");
+        li.style = "display: flex; gap: .5rem; align-items: center";
+        let liContent = `
+      <h4>- ${v.name}:</h4>
+      <p>${v.qty}<span style="font-weight: 500;"> People</span></p>
+      <p>${v.value}<span style="font-weight: 500;">${v.type === "percentage" ? "%" : " fixed"} reduction</span></p>
+      `;
+        li.innerHTML += liContent;
+        ul.appendChild(li);
+    });
+    ul.innerHTML += `<img src="https://picsum.photos/200" alt="" width="200px" style="border-radius: 15px;">`;
+    modalBody.appendChild(ul);
+    modal.classList.remove("is-hidden");
 }
