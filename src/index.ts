@@ -433,28 +433,33 @@ function showEvents(arr: eventType[]) {
 }
 
 function trackShowenEvent(id: number, arr: eventType[]) {
-  const element = document.querySelector<HTMLTableRowElement>(`tr[data-event-id="${id}"]`);
+  const element = document.querySelector<HTMLTableRowElement>(
+    `tr[data-event-id="${id}"]`
+  );
   const modal = document.querySelector("#event-modal")!;
 
   modal.addEventListener("click", (e) => {
     const button = e.target as HTMLDivElement;
     if (button.dataset.action === "close-modal") {
-      showEventDetails(Number(id), false, arr)
+      showEventDetails(Number(id), false, arr);
+    }
+    if (button.dataset.action === "edit") {
+      editEvent(Number(id), false, arr);
     }
   });
 
   element?.addEventListener("click", function (e) {
     const target = e.target as HTMLButtonElement;
+    console.log(target.dataset.action);
     if (target.dataset.action === "archive") {
       const newArr = removeEvent(arr, id);
       eventsTable.innerHTML = "";
       showEvents(newArr);
-    }
-    if (target.dataset.action === "details") {
-      console.log("ddddd");
+    } else if (target.dataset.action === "details") {
       showEventDetails(Number(id), true, arr);
+    } else if (target.dataset.action === "edit") {
+      editEvent(Number(id), true, arr);
     }
-    
   });
 }
 
@@ -517,15 +522,20 @@ function sortEvents(events: eventType[], condition: string) {
 function showEventDetails(id: number, show: boolean, arr: eventType[]) {
   const modal = document.querySelector("#event-modal")!;
   const modalBody = document.querySelector("#modal-body")!;
+  const editForm = document.querySelector("#edit-form")!;
 
-  if(!show){
-    modalBody.innerHTML = ""
-    modal.classList.add("is-hidden")
-    return
+  editForm.classList.add("is-hidden");
+  modalBody.innerHTML = "";
+
+  if (!show) {
+    modalBody.classList.add("is-hidden");
+    modal.classList.add("is-hidden");
+    console.log(modalBody.className);
+    return;
   }
 
+  modalBody.classList.remove("is-hidden");
   let [ev] = arr.filter((e) => Number(e.id) === id);
-  console.log(ev);
   const ul = document.createElement("ul");
   const h2 = document.createElement("h2");
   const h3 = document.createElement("h3");
@@ -545,7 +555,6 @@ function showEventDetails(id: number, show: boolean, arr: eventType[]) {
   modalBody.appendChild(h3);
 
   ev.variants.map((v) => {
-    console.log("rrrr");
     let li = document.createElement("li");
     li.style = "display: flex; gap: .5rem; align-items: center";
 
@@ -565,3 +574,67 @@ function showEventDetails(id: number, show: boolean, arr: eventType[]) {
   modalBody.appendChild(ul);
   modal.classList.remove("is-hidden");
 }
+
+function editEvent(id: number, show: boolean, arr: eventType[]) {
+  const [foundEvent] = arr.filter((e) => Number(e.id) === id);
+
+  const modal = document.querySelector("#event-modal")!;
+  const modalBody = document.querySelector("#modal-body")!;
+  const editForm = document.querySelector<HTMLInputElement>("#edit-form")!;
+  const titleInput = document.querySelector<HTMLInputElement>("#edit-title")!;
+  const imageInput = document.querySelector<HTMLInputElement>("#edit-image")!;
+  const descInput = document.querySelector<HTMLTextAreaElement>("#edit-desc")!;
+  const priceInput = document.querySelector<HTMLInputElement>("#edit-price")!;
+  const seatInput = document.querySelector<HTMLInputElement>("#edit-seat")!;
+
+  modal.classList.remove("is-hidden");
+  editForm.classList.remove("is-hidden");
+  modalBody.classList.add("is-hidden");
+
+  if (!show) {
+    modal.classList.add("is-hidden");
+    // modalBody.innerHTML = "";
+    return;
+  }
+
+  console.log(searchInput);
+
+  titleInput.value = foundEvent.title;
+  imageInput.value = foundEvent.image;
+  descInput.value = foundEvent.description;
+  seatInput.value = foundEvent.seats.toString();
+  priceInput.value = foundEvent.price.toString();
+
+  editForm.addEventListener("submit", (e)=>{
+    e.preventDefault()
+  
+    if (
+      titleInput.value.trim() !== "" &&
+      descInput.value.trim() !== "" &&
+      !isNaN(Number(priceInput.value)) &&
+      Number(priceInput.value) > 0 &&
+      !isNaN(Number(seatInput.value)) &&
+      Number(seatInput.value) > 0
+    ) {
+      const event = {
+        title: titleInput.value.trim(),
+        image: imageInput.value.trim(),
+        description: descInput.value.trim(),
+        seats: Number(seatInput.value),
+        price: Number(priceInput.value),
+      };
+
+      let options = {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(event)
+      }
+
+       fetchData(`http://localhost:8080/posts/${id}`,"http://localhost:8080/archive", options)
+      console.log(event);
+    }
+  })
+    modal.classList.remove("is-hidden");
+  }

@@ -1,36 +1,12 @@
 {
   "posts": [
     {
-      "id": "2",
-      "title": "Tech Conference 2025",
-      "image": "https://example.com/tech-conference.jpg",
-      "description": "The biggest tech gathering of the year",
-      "seats": 200,
-      "price": 199.99,
-      "variants": [
-        {
-          "id": 1,
-          "name": "VIP Pass",
-          "qty": 50,
-          "value": 50,
-          "type": "fixed"
-        },
-        {
-          "id": 2,
-          "name": "Early Registration",
-          "qty": 100,
-          "value": 15,
-          "type": "percentage"
-        }
-      ]
-    },
-    {
       "id": "3",
-      "title": "Art Expo",
-      "image": "https://example.com/art-expo.jpg",
-      "description": "Experience contemporary art from local artists",
-      "seats": 150,
-      "price": 29.99,
+      "title": "Art Expo ed",
+      "image": "https://example.com/art-expo.jpeg",
+      "description": "Experience contemporary art from local artists.",
+      "seats": 151,
+      "price": 31,
       "variants": [
         {
           "id": 1,
@@ -45,30 +21,6 @@
           "qty": 50,
           "value": 5,
           "type": "fixed"
-        }
-      ]
-    },
-    {
-      "id": "4",
-      "title": "Music Night",
-      "image": "https://example.com/music-night.jpg",
-      "description": "Live performances from top bands",
-      "seats": 80,
-      "price": 59.99,
-      "variants": [
-        {
-          "id": 1,
-          "name": "VIP Seat",
-          "qty": 10,
-          "value": 20,
-          "type": "fixed"
-        },
-        {
-          "id": 2,
-          "name": "Student Discount",
-          "qty": 20,
-          "value": 15,
-          "type": "percentage"
         }
       ]
     },
@@ -193,7 +145,7 @@
       ]
     },
     {
-      "id": 1,
+      "id": "1",
       "title": "Modern css",
       "image": "https://www.youtube.com/",
       "description": "modern css is the future",
@@ -208,15 +160,6 @@
           "type": "fixed"
         }
       ]
-    },
-    {
-      "id": 11,
-      "title": "MERN",
-      "image": "https://www.youtube.com/",
-      "description": "MERN IS THE FUTURE",
-      "seats": 6,
-      "price": 50,
-      "variants": []
     }
   ],
   "archive": [
@@ -245,7 +188,7 @@
       ]
     },
     {
-      "id": 10,
+      "id": "10",
       "title": "Modern css",
       "image": "https://www.youtube.com/",
       "description": "modern css is the future",
@@ -280,6 +223,63 @@
           "id": 2,
           "name": "Bulk Purchase",
           "qty": 30,
+          "value": 15,
+          "type": "percentage"
+        }
+      ]
+    },
+    {
+      "id": "11",
+      "title": "MERN",
+      "image": "https://www.youtube.com/",
+      "description": "MERN IS THE FUTURE",
+      "seats": 6,
+      "price": 50,
+      "variants": []
+    },
+    {
+      "id": "2",
+      "title": "Tech Conference 2025",
+      "image": "https://example.com/tech-conference.jpg",
+      "description": "The biggest tech gathering of the year",
+      "seats": 200,
+      "price": 199.99,
+      "variants": [
+        {
+          "id": 1,
+          "name": "VIP Pass",
+          "qty": 50,
+          "value": 50,
+          "type": "fixed"
+        },
+        {
+          "id": 2,
+          "name": "Early Registration",
+          "qty": 100,
+          "value": 15,
+          "type": "percentage"
+        }
+      ]
+    },
+    {
+      "id": "4",
+      "title": "Music Night",
+      "image": "https://example.com/music-night.jpg",
+      "description": "Live performances from top bands",
+      "seats": 80,
+      "price": 59.99,
+      "variants": [
+        {
+          "id": 1,
+          "name": "VIP Seat",
+          "qty": 10,
+          "value": 20,
+          "type": "fixed"
+        },
+        {
+          "id": 2,
+          "name": "Student Discount",
+          "qty": 20,
           "value": 15,
           "type": "percentage"
         }

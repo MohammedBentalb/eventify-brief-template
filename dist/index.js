@@ -327,17 +327,23 @@ function trackShowenEvent(id, arr) {
         if (button.dataset.action === "close-modal") {
             showEventDetails(Number(id), false, arr);
         }
+        if (button.dataset.action === "edit") {
+            editEvent(Number(id), false, arr);
+        }
     });
     element === null || element === void 0 ? void 0 : element.addEventListener("click", function (e) {
         const target = e.target;
+        console.log(target.dataset.action);
         if (target.dataset.action === "archive") {
             const newArr = removeEvent(arr, id);
             eventsTable.innerHTML = "";
             showEvents(newArr);
         }
-        if (target.dataset.action === "details") {
-            console.log("ddddd");
+        else if (target.dataset.action === "details") {
             showEventDetails(Number(id), true, arr);
+        }
+        else if (target.dataset.action === "edit") {
+            editEvent(Number(id), true, arr);
         }
     });
 }
@@ -387,13 +393,17 @@ function sortEvents(events, condition) {
 function showEventDetails(id, show, arr) {
     const modal = document.querySelector("#event-modal");
     const modalBody = document.querySelector("#modal-body");
+    const editForm = document.querySelector("#edit-form");
+    editForm.classList.add("is-hidden");
+    modalBody.innerHTML = "";
     if (!show) {
-        modalBody.innerHTML = "";
+        modalBody.classList.add("is-hidden");
         modal.classList.add("is-hidden");
+        console.log(modalBody.className);
         return;
     }
+    modalBody.classList.remove("is-hidden");
     let [ev] = arr.filter((e) => Number(e.id) === id);
-    console.log(ev);
     const ul = document.createElement("ul");
     const h2 = document.createElement("h2");
     const h3 = document.createElement("h3");
@@ -409,7 +419,6 @@ function showEventDetails(id, show, arr) {
     modalBody.appendChild(p);
     modalBody.appendChild(h3);
     ev.variants.map((v) => {
-        console.log("rrrr");
         let li = document.createElement("li");
         li.style = "display: flex; gap: .5rem; align-items: center";
         let liContent = `
@@ -422,5 +431,57 @@ function showEventDetails(id, show, arr) {
     });
     ul.innerHTML += `<img src="https://picsum.photos/200" alt="" width="200px" style="border-radius: 15px;">`;
     modalBody.appendChild(ul);
+    modal.classList.remove("is-hidden");
+}
+function editEvent(id, show, arr) {
+    const [foundEvent] = arr.filter((e) => Number(e.id) === id);
+    const modal = document.querySelector("#event-modal");
+    const modalBody = document.querySelector("#modal-body");
+    const editForm = document.querySelector("#edit-form");
+    const titleInput = document.querySelector("#edit-title");
+    const imageInput = document.querySelector("#edit-image");
+    const descInput = document.querySelector("#edit-desc");
+    const priceInput = document.querySelector("#edit-price");
+    const seatInput = document.querySelector("#edit-seat");
+    modal.classList.remove("is-hidden");
+    editForm.classList.remove("is-hidden");
+    modalBody.classList.add("is-hidden");
+    if (!show) {
+        modal.classList.add("is-hidden");
+        // modalBody.innerHTML = "";
+        return;
+    }
+    console.log(searchInput);
+    titleInput.value = foundEvent.title;
+    imageInput.value = foundEvent.image;
+    descInput.value = foundEvent.description;
+    seatInput.value = foundEvent.seats.toString();
+    priceInput.value = foundEvent.price.toString();
+    editForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        if (titleInput.value.trim() !== "" &&
+            descInput.value.trim() !== "" &&
+            !isNaN(Number(priceInput.value)) &&
+            Number(priceInput.value) > 0 &&
+            !isNaN(Number(seatInput.value)) &&
+            Number(seatInput.value) > 0) {
+            const event = {
+                title: titleInput.value.trim(),
+                image: imageInput.value.trim(),
+                description: descInput.value.trim(),
+                seats: Number(seatInput.value),
+                price: Number(priceInput.value),
+            };
+            let options = {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(event)
+            };
+            fetchData(`http://localhost:8080/posts/${id}`, "http://localhost:8080/archive", options);
+            console.log(event);
+        }
+    });
     modal.classList.remove("is-hidden");
 }

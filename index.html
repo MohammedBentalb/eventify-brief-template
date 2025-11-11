@@ -272,7 +272,6 @@
                   </tr>
                 </thead>
                 <tbody class="table__body">
-
                   <!-- EXAMPLE: Students will populate this with JS -->
                   <!-- 
                                 <tr class="table__row" data-event-id="1">
@@ -342,10 +341,126 @@
             &times;
           </button>
         </header>
-        <div class="modal__body" id="modal-body" style="display: flex; flex-direction: column; gap: 1rem;">
+        <div
+          class="modal__body"
+          id="modal-body"
+          style="display: flex; flex-direction: column; gap: 1rem"
+        >
           <!-- Content populated by JS -->
-          
+        </div>
+        <form action="" class="modal__body" id="edit-form" style="display: flex; flex-direction: column; justify-content: center; gap: .5rem;">
+          <div style="display: flex; flex-direction: column; gap: 0.5rem">
+            <label for="title" style="font-weight: 500">Title:</label>
+            <input
+              type="text"
+              name="title"
+              id="edit-title"
+              style="min-height: 30px; border-radius: 8px; padding: .5rem;"
+            />
           </div>
+          <div style="display: flex; flex-direction: column; gap: 0.5rem">
+            <label for="image" style="font-weight: 500">Image:</label>
+            <input
+              type="url"
+              name="image"
+              id="edit-image"
+              style="min-height: 30px; border-radius: 8px; padding: .5rem;"
+            />
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 0.5rem">
+            <label for="description" style="font-weight: 500"
+              >Description:</label
+            >
+            <textarea
+              name="description"
+              id="edit-desc"
+              style="min-height: 30px; border-radius: 8px; padding: .5rem;"
+            ></textarea>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 0.5rem">
+            <label for="seats" style="font-weight: 500">Seats:</label>
+            <input
+              type="number"
+              name="seats"
+              min="1"
+              max="1000"
+              id="edit-seat"
+              style="min-height: 30px; border-radius: 8px; padding: .5rem;"
+            />
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 0.5rem">
+            <label for="price" style="font-weight: 500">Price:</label>
+            <input
+              type="number"
+              name="price"
+              id="edit-price"
+              min="10"
+              max="900"
+              style="min-height: 30px; border-radius: 8px; padding: .5rem;"
+            />
+          </div>
+          <ul class="show-variants-edit" style="list-style: none"></ul>
+<!--           <fieldset
+            class=""
+            style="
+              padding-inline: 0.5rem;
+              padding-block: 0.5rem;
+              margin-block: 1rem;
+            "
+          >
+            <legend class="variants__title">
+              Pricing Variants (Optional)
+              <button
+                type="button"
+                class="btn btn--small"
+                id="btn-add-variant-edit"
+              >
+                + Add Variant
+              </button>
+            </legend>
+
+
+            <div id="variants-list edit-variants" class="variants__list">
+              <div id="variants-parent" class="variant-list"></div>
+              <div
+                class="variant-row"
+                style="display: flex; align-items: center"
+              >
+                <input
+                  type="text"
+                  class="input variant-row__name"
+                  placeholder="Variant name (e.g., 'Early Bird')"
+                />
+                <input
+                  type="number"
+                  class="input variant-row__qty"
+                  placeholder="Qty"
+                  min="1"
+                />
+                <input
+                  type="number"
+                  class="input variant-row__value"
+                  placeholder="Value"
+                  step="0.01"
+                  min="1"
+                />
+                <select class="select variant-row__type">
+                  <option value="fixed">Fixed Price</option>
+                  <option value="percentage">Percentage Off</option>
+                </select>
+                <button
+                  type="button"
+                  class="btn btn--primary btn--small variant-row__add"
+                  id="add-variant-btn"
+                >
+                  add
+                </button>
+              </div>
+            </div>
+
+          </fieldset> -->
+          <button type="submit" class="btn btn--primary">Submit</button>
+        </form>
       </div>
     </div>
 
