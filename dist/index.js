@@ -45,10 +45,9 @@ const eventTiles = {
         subTile: "View the deleted Events",
     },
 };
-// eventCount a variable that represent the event id added bu form (initialized inside the fetchData function)
-let eventCount = 0;
 // retrieving the content displayed keyword from local storage of setting it to be equal to stats by default
 let screenContent = localStorage.getItem("screenContent") || "stats";
+let eventCount = Number(localStorage.getItem("eventCount")) || 0;
 // calling function that initialize the ui based on the value of local storage or stats by default
 updateUiPlacement(screenContent);
 // a loop for looping through botton lists and having click eventlistnner for each one of them to select the active button
@@ -79,12 +78,17 @@ async function fetchData(url, url2, options = undefined, options2 = undefined) {
         const response = await fetch(url, options);
         const response2 = await fetch(url2, options2);
         const posts = await response.json();
+        const archive = await response2.json();
         console.log(posts);
         if (!response.ok || !response2.ok)
             throw Error("response is not okay");
-        eventCount = posts.length + 1;
+        eventCount =
+            Number(localStorage.getItem("eventCount")) ||
+                posts.length + archive.length + 1;
+        console.log(eventCount);
         calculateStats(posts);
         renderEvents(posts);
+        listArchive(archive);
     }
     catch (e) {
         if (e instanceof Error)
@@ -168,6 +172,7 @@ function addEvent() {
         e.preventDefault();
         errorsArray = [];
         errorSpace.innerHTML = "";
+        errorSpace.classList.add("is-hidden");
         if (!eventName || eventName.value.trim() === "")
             errorsArray.push({ name: "title", errorText: "Invalid name" });
         if (!eventImage ||
@@ -201,6 +206,8 @@ function addEvent() {
                     variants: variantArray,
                 }),
             };
+            eventCount += 1;
+            localStorage.setItem("eventCount", eventCount.toString());
             fetchData("http://localhost:8080/posts", "http://localhost:8080/archive", option);
             // reset inputs
             variantArray = [];
@@ -212,6 +219,8 @@ function addEvent() {
         }
         else {
             errorSpace === null || errorSpace === void 0 ? void 0 : errorSpace.classList.toggle("is-hidden", errorsArray.length === 0);
+            errorSpace.scrollIntoView({ behavior: "smooth" });
+            console.log("errr iii rr");
             errorsArray.map((err) => {
                 let content = `
       <li style="background-color: rgb(255, 255, 255, .5); padding-inline: .5rem; padding-block: .5rem; border-radius: .4rem; display: flex; gap: 1rem; font-weight: 500;"><span style="font-weight: bold; text-transform: capitalize;">* ${err.name}: </span>${err.errorText}</li>
@@ -258,6 +267,7 @@ function removeVariant() {
 }
 // calling add event to allow form functionalities to work
 addEvent();
+// renderEvents is a function that renders events and keep track of the sort / search inputs to modify the displayed events and their order
 function renderEvents(events) {
     let result = [...events];
     eventsTable.innerHTML = "";
@@ -278,6 +288,7 @@ function renderEvents(events) {
         showEvents(result);
     });
 }
+// showEvents is a function that accepts an array of events as a param and renders the list of events it recieved 
 function showEvents(arr) {
     arr.map((ev) => {
         const tr = document.createElement("tr");
@@ -319,6 +330,7 @@ function showEvents(arr) {
     });
     5;
 }
+// trackShowenEvent is a function that has been caled inside showEvents since it takes id for each event to trak the actions applied to it
 function trackShowenEvent(id, arr) {
     const element = document.querySelector(`tr[data-event-id="${id}"]`);
     const modal = document.querySelector("#event-modal");
@@ -347,9 +359,11 @@ function trackShowenEvent(id, arr) {
         }
     });
 }
+// removeEvent is a function that  removes an event from the event section buy sendnig a post request to the archive api to store it in there and den a delete request to the posts api to remove it from there
 function removeEvent(arr, id) {
     let [foundEvent] = arr.filter((ev) => ev.id === id);
     let newArr = arr.filter((ev) => ev.id !== id);
+    console.log(foundEvent);
     let option = {
         method: "DELETE",
         headers: {
@@ -366,6 +380,7 @@ function removeEvent(arr, id) {
     fetchData(`http://localhost:8080/posts/${id}`, "http://localhost:8080/archive", option, option2);
     return newArr;
 }
+// SortEvents is a function that has a bubble sort implemented inside of it to sort events based of the condition it recieve from the sort input
 function sortEvents(events, condition) {
     let sorted = [...events];
     let finalResult;
@@ -390,6 +405,7 @@ function sortEvents(events, condition) {
     }
     return sorted;
 }
+// showEventDetails is a function that shows a model with all info about an event
 function showEventDetails(id, show, arr) {
     const modal = document.querySelector("#event-modal");
     const modalBody = document.querySelector("#modal-body");
@@ -433,6 +449,7 @@ function showEventDetails(id, show, arr) {
     modalBody.appendChild(ul);
     modal.classList.remove("is-hidden");
 }
+// editEvent is a function that show a pop-up with a form to change the wanted fileds to new values and applying a patch request to modify the event usin the posts api
 function editEvent(id, show, arr) {
     const [foundEvent] = arr.filter((e) => Number(e.id) === id);
     const modal = document.querySelector("#event-modal");
@@ -475,13 +492,60 @@ function editEvent(id, show, arr) {
             let options = {
                 method: "PATCH",
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
                 },
-                body: JSON.stringify(event)
+                body: JSON.stringify(event),
             };
             fetchData(`http://localhost:8080/posts/${id}`, "http://localhost:8080/archive", options);
-            console.log(event);
         }
     });
     modal.classList.remove("is-hidden");
+}
+// listArchive is a function that list add the deleted events stored inside the archive api and handle the process of restoring them bach the the main events
+function listArchive(arr) {
+    arr.map((ev) => {
+        const tr = document.createElement("tr");
+        const table = document.querySelector("#t-archive");
+        tr.addEventListener("click", (e) => {
+            const button = e.target;
+            if (button.dataset.action === "restore") {
+                const [selectedEvent] = arr.filter((ev) => Number(ev.id) === Number(button.dataset.event));
+                console.log(selectedEvent);
+                let options = {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(selectedEvent),
+                };
+                let options2 = {
+                    method: "DELETE",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                };
+                fetchData(`http://localhost:8080/posts/`, `http://localhost:8080/archive/${selectedEvent.id}`, options, options2).catch((e) => console.log(e));
+            }
+        });
+        tr.setAttribute("data-event-id", ev.id.toString());
+        tr.classList.add("table__row");
+        let content = `
+    <td>${ev.id}</td>
+    <td>${ev.title}</td>
+    <td>${ev.seats}</td>
+    <td>$${ev.price}</td>
+      <td>
+        <button
+          class="btn btn--primary btn--small"
+          data-action="restore"
+          data-event="${ev.id}"
+          >
+          restore
+          </button>
+          </td>
+    `;
+        tr.innerHTML = content;
+        table.appendChild(tr);
+        trackShowenEvent(ev.id, arr);
+    });
 }

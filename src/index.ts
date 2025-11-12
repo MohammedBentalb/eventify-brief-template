@@ -1,38 +1,24 @@
 import * as ChartJs from "chart.js";
 
 // @ts-ignore
-ChartJs.Chart.register.apply(
-  null,
-  Object.values(ChartJs).filter((chartClass: any) => chartClass.id)
-);
-
+ChartJs.Chart.register.apply(null,Object.values(ChartJs).filter((chartClass: any) => chartClass.id));
 const theMainContentTile = document.querySelector(".page-header__content")!;
-const sideNavButtons = document.querySelectorAll<HTMLButtonElement>(
-  "button[data-screen]"
-);
-const mainSection = document.querySelectorAll<HTMLDListElement>(
-  "section[data-screen]"
-);
+const sideNavButtons = document.querySelectorAll<HTMLButtonElement>("button[data-screen]");
+const mainSection = document.querySelectorAll<HTMLDListElement>("section[data-screen]");
 
 // form inputs
 const eventForm = document.querySelector<HTMLFormElement>("#event-form")!;
 const eventName = document.querySelector<HTMLInputElement>("#event-title")!;
 const eventImage = document.querySelector<HTMLInputElement>("#event-image")!;
-const eventDesc =
-  document.querySelector<HTMLTextAreaElement>("#event-description")!;
+const eventDesc = document.querySelector<HTMLTextAreaElement>("#event-description")!;
 const eventSeats = document.querySelector<HTMLInputElement>("#event-seats")!;
 const eventPrice = document.querySelector<HTMLInputElement>("#event-price")!;
 
 // variant
-const variantName =
-  document.querySelector<HTMLInputElement>(".variant-row__name")!;
-const variantQuantity =
-  document.querySelector<HTMLInputElement>(".variant-row__qty")!;
-const variantValue = document.querySelector<HTMLInputElement>(
-  ".variant-row__value"
-)!;
-const variantType =
-  document.querySelector<HTMLInputElement>(".variant-row__type")!;
+const variantName = document.querySelector<HTMLInputElement>(".variant-row__name")!;
+const variantQuantity = document.querySelector<HTMLInputElement>(".variant-row__qty")!;
+const variantValue = document.querySelector<HTMLInputElement>(".variant-row__value")!;
+const variantType = document.querySelector<HTMLInputElement>(".variant-row__type")!;
 const addVariantButton = document.querySelector("#add-variant-btn")!;
 const variantSection = document.querySelector("#variants-parent")!;
 
@@ -68,7 +54,6 @@ const eventTiles = {
 };
 
 // eventCount a variable that represent the event id added bu form (initialized inside the fetchData function)
-
 type eventType = {
   id: number;
   title: string;
@@ -90,14 +75,13 @@ type ErrorType = { name: string; errorText: string };
 type screenContentType = keyof typeof eventTiles;
 
 // retrieving the content displayed keyword from local storage of setting it to be equal to stats by default
-let screenContent: screenContentType =
-  (localStorage.getItem("screenContent") as screenContentType) || "stats";
+let screenContent: screenContentType =(localStorage.getItem("screenContent") as screenContentType) || "stats";
 let eventCount = Number(localStorage.getItem("eventCount")) || 0;
 
 // calling function that initialize the ui based on the value of local storage or stats by default
 updateUiPlacement(screenContent);
-
 // a loop for looping through botton lists and having click eventlistnner for each one of them to select the active button
+
 sideNavButtons.forEach((element) => {
   element.addEventListener("click", (e) => {
     const target = e.currentTarget as HTMLButtonElement;
@@ -108,7 +92,6 @@ sideNavButtons.forEach((element) => {
     updateUiPlacement(screenContent);
   });
 });
-
 // function that set the avtive button as wel as the visible section, and changing the title and sub title of the heading
 function updateUiPlacement(screen: screenContentType) {
   // change the button in the aside
@@ -125,10 +108,8 @@ function updateUiPlacement(screen: screenContentType) {
   theMainContentTile.children[1].textContent =
     eventTiles[screenContent].subTile;
 }
-
 // calling fetchData for fetching data from local api
 fetchData("http://localhost:8080/posts", "http://localhost:8080/archive");
-
 // fetchData an async function that fetches data from local json-server api
 async function fetchData(
   url: string,
@@ -157,7 +138,6 @@ async function fetchData(
     if (e instanceof Error) console.log(e.message);
   }
 }
-
 // calculateStats a function that gets data and calculate the total seats, price, and events
 function calculateStats(data: eventType[]) {
   let totalTheoryPrice = 0,
@@ -175,7 +155,6 @@ function calculateStats(data: eventType[]) {
     data.map((evt) => evt.seats)
   );
 }
-
 // renderStats a function that renders the calculated stats to the DOM
 function RenderStats(
   seatsNumber: number,
@@ -190,7 +169,6 @@ function RenderStats(
   totalSeats.textContent = seatsNumber.toString();
   totalPrice.textContent = `${priceNumber.toString()}$`;
 }
-
 // function that renders a graph based on the available events
 function renderGraph(labels: string[], data: number[]) {
   const ctx = document.getElementById("myChart") as HTMLCanvasElement;
@@ -209,7 +187,6 @@ function renderGraph(labels: string[], data: number[]) {
     },
   });
 }
-
 // addEventa a function that handels the entire form manipulation [adding events, adding variants, entire validation]
 function addEvent() {
   let found = null;
@@ -256,6 +233,7 @@ function addEvent() {
     e.preventDefault();
     errorsArray = [];
     errorSpace.innerHTML = "";
+    errorSpace.classList.add("is-hidden");
 
     if (!eventName || eventName.value.trim() === "")
       errorsArray.push({ name: "title", errorText: "Invalid name" });
@@ -317,7 +295,8 @@ function addEvent() {
       eventPrice.value = "0";
     } else {
       errorSpace?.classList.toggle("is-hidden", errorsArray.length === 0);
-
+      errorSpace.scrollIntoView({ behavior: "smooth" });
+      console.log("errr iii rr");
       errorsArray.map((err) => {
         let content = `
       <li style="background-color: rgb(255, 255, 255, .5); padding-inline: .5rem; padding-block: .5rem; border-radius: .4rem; display: flex; gap: 1rem; font-weight: 500;"><span style="font-weight: bold; text-transform: capitalize;">* ${err.name}: </span>${err.errorText}</li>
@@ -328,7 +307,6 @@ function addEvent() {
     // console.log(errorsArray);
   });
 }
-
 // renedrVariants a function that loops through the variant array and render all variants to the DOM
 function renderVariants() {
   variantSection.innerHTML = "";
@@ -351,7 +329,6 @@ function renderVariants() {
     variantSection.appendChild(div);
   });
 }
-
 // removeVariant a function that loops through the variant array and remove the one whose remove button got clicked
 function removeVariant() {
   variantArray.map((vr) => {
@@ -369,10 +346,9 @@ function removeVariant() {
     });
   });
 }
-
 // calling add event to allow form functionalities to work
 addEvent();
-
+// renderEvents is a function that renders events and keep track of the sort / search inputs to modify the displayed events and their order
 function renderEvents(events: eventType[]) {
   let result: eventType[] = [...events];
   eventsTable.innerHTML = "";
@@ -397,7 +373,7 @@ function renderEvents(events: eventType[]) {
     showEvents(result);
   });
 }
-
+// showEvents is a function that accepts an array of events as a param and renders the list of events it recieved 
 function showEvents(arr: eventType[]) {
   arr.map((ev) => {
     const tr = document.createElement("tr");
@@ -440,7 +416,7 @@ function showEvents(arr: eventType[]) {
   });
   5;
 }
-
+// trackShowenEvent is a function that has been caled inside showEvents since it takes id for each event to trak the actions applied to it
 function trackShowenEvent(id: number, arr: eventType[]) {
   const element = document.querySelector<HTMLTableRowElement>(
     `tr[data-event-id="${id}"]`
@@ -471,7 +447,7 @@ function trackShowenEvent(id: number, arr: eventType[]) {
     }
   });
 }
-
+// removeEvent is a function that  removes an event from the event section buy sendnig a post request to the archive api to store it in there and den a delete request to the posts api to remove it from there
 function removeEvent(arr: eventType[], id: number) {
   let [foundEvent] = arr.filter((ev) => ev.id === id);
   let newArr = arr.filter((ev) => ev.id !== id);
@@ -501,7 +477,7 @@ function removeEvent(arr: eventType[], id: number) {
 
   return newArr;
 }
-
+// SortEvents is a function that has a bubble sort implemented inside of it to sort events based of the condition it recieve from the sort input
 function sortEvents(events: eventType[], condition: string) {
   let sorted = [...events];
   let finalResult;
@@ -529,7 +505,7 @@ function sortEvents(events: eventType[], condition: string) {
 
   return sorted;
 }
-
+// showEventDetails is a function that shows a model with all info about an event
 function showEventDetails(id: number, show: boolean, arr: eventType[]) {
   const modal = document.querySelector("#event-modal")!;
   const modalBody = document.querySelector("#modal-body")!;
@@ -585,7 +561,7 @@ function showEventDetails(id: number, show: boolean, arr: eventType[]) {
   modalBody.appendChild(ul);
   modal.classList.remove("is-hidden");
 }
-
+// editEvent is a function that show a pop-up with a form to change the wanted fileds to new values and applying a patch request to modify the event usin the posts api
 function editEvent(id: number, show: boolean, arr: eventType[]) {
   const [foundEvent] = arr.filter((e) => Number(e.id) === id);
 
@@ -652,7 +628,7 @@ function editEvent(id: number, show: boolean, arr: eventType[]) {
   });
   modal.classList.remove("is-hidden");
 }
-
+// listArchive is a function that list add the deleted events stored inside the archive api and handle the process of restoring them bach the the main events
 function listArchive(arr: eventType[] | []) {
   arr.map((ev) => {
     const tr = document.createElement("tr");
