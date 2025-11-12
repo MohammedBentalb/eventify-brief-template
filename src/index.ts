@@ -68,7 +68,6 @@ const eventTiles = {
 };
 
 // eventCount a variable that represent the event id added bu form (initialized inside the fetchData function)
-let eventCount = 0;
 
 type eventType = {
   id: number;
@@ -93,6 +92,7 @@ type screenContentType = keyof typeof eventTiles;
 // retrieving the content displayed keyword from local storage of setting it to be equal to stats by default
 let screenContent: screenContentType =
   (localStorage.getItem("screenContent") as screenContentType) || "stats";
+let eventCount = Number(localStorage.getItem("eventCount")) || 0;
 
 // calling function that initialize the ui based on the value of local storage or stats by default
 updateUiPlacement(screenContent);
@@ -140,12 +140,19 @@ async function fetchData(
     const response = await fetch(url, options);
     const response2 = await fetch(url2, options2);
     const posts = await response.json();
+    const archive = await response2.json();
+
     console.log(posts);
     if (!response.ok || !response2.ok) throw Error("response is not okay");
 
-    eventCount = posts.length + 1;
+    eventCount =
+      Number(localStorage.getItem("eventCount")) ||
+      posts.length + archive.length + 1;
+    console.log(eventCount);
+
     calculateStats(posts);
     renderEvents(posts);
+    listArchive(archive);
   } catch (e) {
     if (e instanceof Error) console.log(e.message);
   }
@@ -291,6 +298,8 @@ function addEvent() {
           variants: variantArray,
         }),
       };
+      eventCount += 1;
+      localStorage.setItem("eventCount", eventCount.toString());
 
       fetchData(
         "http://localhost:8080/posts",
@@ -466,6 +475,7 @@ function trackShowenEvent(id: number, arr: eventType[]) {
 function removeEvent(arr: eventType[], id: number) {
   let [foundEvent] = arr.filter((ev) => ev.id === id);
   let newArr = arr.filter((ev) => ev.id !== id);
+  console.log(foundEvent);
 
   let option = {
     method: "DELETE",
@@ -488,6 +498,7 @@ function removeEvent(arr: eventType[], id: number) {
     option,
     option2
   );
+
   return newArr;
 }
 
@@ -605,9 +616,9 @@ function editEvent(id: number, show: boolean, arr: eventType[]) {
   seatInput.value = foundEvent.seats.toString();
   priceInput.value = foundEvent.price.toString();
 
-  editForm.addEventListener("submit", (e)=>{
-    e.preventDefault()
-  
+  editForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+
     if (
       titleInput.value.trim() !== "" &&
       descInput.value.trim() !== "" &&
@@ -627,14 +638,78 @@ function editEvent(id: number, show: boolean, arr: eventType[]) {
       let options = {
         method: "PATCH",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify(event)
-      }
+        body: JSON.stringify(event),
+      };
 
-       fetchData(`http://localhost:8080/posts/${id}`,"http://localhost:8080/archive", options)
-      console.log(event);
+      fetchData(
+        `http://localhost:8080/posts/${id}`,
+        "http://localhost:8080/archive",
+        options
+      );
     }
-  })
-    modal.classList.remove("is-hidden");
-  }
+  });
+  modal.classList.remove("is-hidden");
+}
+
+function listArchive(arr: eventType[] | []) {
+  arr.map((ev) => {
+    const tr = document.createElement("tr");
+    const table = document.querySelector("#t-archive")!;
+
+    tr.addEventListener("click", (e) => {
+      const button = e.target as HTMLButtonElement;
+      if (button.dataset.action === "restore") {
+        const [selectedEvent] = arr.filter(
+          (ev) => Number(ev.id) === Number(button.dataset.event)
+        );
+        console.log(selectedEvent);
+
+        let options = {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(selectedEvent),
+        };
+
+        let options2 = {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        };
+
+        fetchData(
+          `http://localhost:8080/posts/`,
+          `http://localhost:8080/archive/${selectedEvent.id}`,
+          options,
+          options2
+        ).catch((e) => console.log(e));
+      }
+    });
+
+    tr.setAttribute("data-event-id", ev.id.toString());
+    tr.classList.add("table__row");
+    let content = `
+    <td>${ev.id}</td>
+    <td>${ev.title}</td>
+    <td>${ev.seats}</td>
+    <td>$${ev.price}</td>
+      <td>
+        <button
+          class="btn btn--primary btn--small"
+          data-action="restore"
+          data-event="${ev.id}"
+          >
+          restore
+          </button>
+          </td>
+    `;
+
+    tr.innerHTML = content;
+    table.appendChild(tr);
+    trackShowenEvent(ev.id, arr);
+  });
+}
