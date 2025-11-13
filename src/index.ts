@@ -1,9 +1,9 @@
-import * as ChartJs from "chart.js";
+// import * as ChartJs from "chart.js";
 import { sortEvents } from "./sort.js";
 import { removeEvent } from "./removeEvent.js";
  
 // @ts-ignore
-ChartJs.Chart.register.apply(null,Object.values(ChartJs).filter((chartClass: any) => chartClass.id));
+// ChartJs.Chart.register.apply(null,Object.values(ChartJs).filter((chartClass: any) => chartClass.id));
 const theMainContentTile = document.querySelector(".page-header__content")!;
 const sideNavButtons = document.querySelectorAll<HTMLButtonElement>("button[data-screen]");
 const mainSection = document.querySelectorAll<HTMLDListElement>("section[data-screen]");
@@ -152,10 +152,10 @@ function calculateStats(data: eventType[]) {
     totalTheoryPrice += event.seats * event.price;
   });
   RenderStats(totalNumberOfSeats, totalEvents, totalTheoryPrice);
-  renderGraph(
-    data.map((evt) => evt.title),
-    data.map((evt) => evt.seats)
-  );
+  // renderGraph(
+  //   data.map((evt) => evt.title),
+  //   data.map((evt) => evt.seats)
+  // );
 }
 // renderStats a function that renders the calculated stats to the DOM
 function RenderStats(
@@ -172,23 +172,23 @@ function RenderStats(
   totalPrice.textContent = `${priceNumber.toString()}$`;
 }
 // function that renders a graph based on the available events
-function renderGraph(labels: string[], data: number[]) {
-  const ctx = document.getElementById("myChart") as HTMLCanvasElement;
+// function renderGraph(labels: string[], data: number[]) {
+//   const ctx = document.getElementById("myChart") as HTMLCanvasElement;
 
-  new ChartJs.Chart(ctx, {
-    type: "line",
-    data: {
-      labels,
-      datasets: [
-        {
-          label: "# of seats",
-          data,
-          borderWidth: 1,
-        },
-      ],
-    },
-  });
-}
+//   new ChartJs.Chart(ctx, {
+//     type: "line",
+//     data: {
+//       labels,
+//       datasets: [
+//         {
+//           label: "# of seats",
+//           data,
+//           borderWidth: 1,
+//         },
+//       ],
+//     },
+//   });
+// }
 // addEventa a function that handels the entire form manipulation [adding events, adding variants, entire validation]
 function addEvent() {
   let found = null;

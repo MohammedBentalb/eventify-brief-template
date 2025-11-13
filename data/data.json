@@ -275,6 +275,30 @@
       "seats": 1,
       "price": 21,
       "variants": []
+    },
+    {
+      "id": "4",
+      "title": "Tech Conference 2025",
+      "image": "https://example.com/tech-conference.jpg",
+      "description": "The biggest tech gathering of the year",
+      "seats": 200,
+      "price": 199.99,
+      "variants": [
+        {
+          "id": 0,
+          "name": "VIP Pass",
+          "qty": 50,
+          "value": 50,
+          "type": "fixed"
+        },
+        {
+          "id": 1,
+          "name": "Early Registration",
+          "qty": 100,
+          "value": 15,
+          "type": "percentage"
+        }
+      ]
     }
   ],
   "archive": [
@@ -299,30 +323,6 @@
           "qty": 15,
           "value": 30,
           "type": "fixed"
-        }
-      ]
-    },
-    {
-      "id": "4",
-      "title": "Tech Conference 2025",
-      "image": "https://example.com/tech-conference.jpg",
-      "description": "The biggest tech gathering of the year",
-      "seats": 200,
-      "price": 199.99,
-      "variants": [
-        {
-          "id": 0,
-          "name": "VIP Pass",
-          "qty": 50,
-          "value": 50,
-          "type": "fixed"
-        },
-        {
-          "id": 1,
-          "name": "Early Registration",
-          "qty": 100,
-          "value": 15,
-          "type": "percentage"
         }
       ]
     }
