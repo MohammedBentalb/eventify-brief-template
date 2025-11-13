@@ -1,4 +1,6 @@
 import * as ChartJs from "chart.js";
+import { sortEvents } from "./sort.js";
+import { removeEvent } from "./removeEvent.js";
 // @ts-ignore
 ChartJs.Chart.register.apply(null, Object.values(ChartJs).filter((chartClass) => chartClass.id));
 const theMainContentTile = document.querySelector(".page-header__content");
@@ -73,7 +75,7 @@ function updateUiPlacement(screen) {
 // calling fetchData for fetching data from local api
 fetchData("http://localhost:8080/posts", "http://localhost:8080/archive");
 // fetchData an async function that fetches data from local json-server api
-async function fetchData(url, url2, options = undefined, options2 = undefined) {
+export async function fetchData(url, url2, options = undefined, options2 = undefined) {
     try {
         const response = await fetch(url, options);
         const response2 = await fetch(url2, options2);
@@ -218,7 +220,7 @@ function addEvent() {
             eventPrice.value = "0";
         }
         else {
-            errorSpace === null || errorSpace === void 0 ? void 0 : errorSpace.classList.toggle("is-hidden", errorsArray.length === 0);
+            errorSpace?.classList.toggle("is-hidden", errorsArray.length === 0);
             errorSpace.scrollIntoView({ behavior: "smooth" });
             console.log("errr iii rr");
             errorsArray.map((err) => {
@@ -255,7 +257,7 @@ function renderVariants() {
 function removeVariant() {
     variantArray.map((vr) => {
         const variantDiv = document.querySelector(`#variant-n-${vr.id}`);
-        variantDiv === null || variantDiv === void 0 ? void 0 : variantDiv.addEventListener("click", (e) => {
+        variantDiv?.addEventListener("click", (e) => {
             const button = e.target;
             if (button.id === "remove-variant") {
                 const newVarriants = variantArray.filter((item) => item.id !== Number(variantDiv.id.split("-")[2]));
@@ -272,7 +274,7 @@ function renderEvents(events) {
     let result = [...events];
     eventsTable.innerHTML = "";
     showEvents(result);
-    searchInput === null || searchInput === void 0 ? void 0 : searchInput.addEventListener("change", function () {
+    searchInput?.addEventListener("change", function () {
         if (searchInput.value.trim() !== "") {
             let newVersion = result.filter((r) => r.title.toLowerCase() === searchInput.value.trim().toLocaleLowerCase());
             eventsTable.innerHTML = "";
@@ -282,7 +284,7 @@ function renderEvents(events) {
             showEvents(result);
         }
     });
-    sortInput === null || sortInput === void 0 ? void 0 : sortInput.addEventListener("change", function () {
+    sortInput?.addEventListener("change", function () {
         result = [...sortEvents(result, sortInput.value.trim())];
         eventsTable.innerHTML = "";
         showEvents(result);
@@ -343,7 +345,7 @@ function trackShowenEvent(id, arr) {
             editEvent(Number(id), false, arr);
         }
     });
-    element === null || element === void 0 ? void 0 : element.addEventListener("click", function (e) {
+    element?.addEventListener("click", function (e) {
         const target = e.target;
         console.log(target.dataset.action);
         if (target.dataset.action === "archive") {
@@ -359,52 +361,32 @@ function trackShowenEvent(id, arr) {
         }
     });
 }
-// removeEvent is a function that  removes an event from the event section buy sendnig a post request to the archive api to store it in there and den a delete request to the posts api to remove it from there
-function removeEvent(arr, id) {
-    let [foundEvent] = arr.filter((ev) => ev.id === id);
-    let newArr = arr.filter((ev) => ev.id !== id);
-    console.log(foundEvent);
-    let option = {
-        method: "DELETE",
-        headers: {
-            "content-Type": "application/json",
-        },
-    };
-    let option2 = {
-        method: "POST",
-        headers: {
-            "content-Type": "application/json",
-        },
-        body: JSON.stringify(foundEvent),
-    };
-    fetchData(`http://localhost:8080/posts/${id}`, "http://localhost:8080/archive", option, option2);
-    return newArr;
-}
-// SortEvents is a function that has a bubble sort implemented inside of it to sort events based of the condition it recieve from the sort input
-function sortEvents(events, condition) {
-    let sorted = [...events];
-    let finalResult;
-    for (let i = 0; i < sorted.length - 1; i++) {
-        for (let j = 0; j < sorted.length - 1 - i; j++) {
-            if (condition === "title-asc")
-                finalResult = sorted[j].title.localeCompare(sorted[j + 1].title) > 0;
-            if (condition === "title-desc")
-                finalResult = sorted[j].title.localeCompare(sorted[j + 1].title) < 0;
-            if (condition === "price-asc")
-                finalResult = sorted[j].price > sorted[j + 1].price;
-            if (condition === "price-desc")
-                finalResult = sorted[j].price < sorted[j + 1].price;
-            if (condition === "seats-asc")
-                finalResult = sorted[j].seats > sorted[j + 1].seats;
-            if (finalResult) {
-                let tmp = sorted[j];
-                sorted[j] = sorted[j + 1];
-                sorted[j + 1] = tmp;
-            }
-        }
-    }
-    return sorted;
-}
+// function removeEvent(arr: eventType[], id: number) {
+//   let [foundEvent] = arr.filter((ev) => ev.id === id);
+//   if(!foundEvent) return arr
+//   let newArr = arr.filter((ev) => ev.id !== id);
+//   console.log(foundEvent);
+//   let option = {
+//     method: "DELETE",
+//     headers: {
+//       "content-Type": "application/json",
+//     },
+//   };
+//   let option2 = {
+//     method: "POST",
+//     headers: {
+//       "content-Type": "application/json",
+//     },
+//     body: JSON.stringify(foundEvent),
+//   };
+//   fetchData(
+//     `http://localhost:8080/posts/${id}`,
+//     "http://localhost:8080/archive",
+//     option,
+//     option2
+//   );
+//   return newArr;
+// }
 // showEventDetails is a function that shows a model with all info about an event
 function showEventDetails(id, show, arr) {
     const modal = document.querySelector("#event-modal");

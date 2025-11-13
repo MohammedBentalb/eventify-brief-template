@@ -1,5 +1,7 @@
 import * as ChartJs from "chart.js";
-
+import { sortEvents } from "./sort.js";
+import { removeEvent } from "./removeEvent.js";
+ 
 // @ts-ignore
 ChartJs.Chart.register.apply(null,Object.values(ChartJs).filter((chartClass: any) => chartClass.id));
 const theMainContentTile = document.querySelector(".page-header__content")!;
@@ -54,7 +56,7 @@ const eventTiles = {
 };
 
 // eventCount a variable that represent the event id added bu form (initialized inside the fetchData function)
-type eventType = {
+export type eventType = {
   id: number;
   title: string;
   image: string;
@@ -111,7 +113,7 @@ function updateUiPlacement(screen: screenContentType) {
 // calling fetchData for fetching data from local api
 fetchData("http://localhost:8080/posts", "http://localhost:8080/archive");
 // fetchData an async function that fetches data from local json-server api
-async function fetchData(
+export async function fetchData(
   url: string,
   url2: string,
   options: any = undefined,
@@ -447,64 +449,38 @@ function trackShowenEvent(id: number, arr: eventType[]) {
     }
   });
 }
-// removeEvent is a function that  removes an event from the event section buy sendnig a post request to the archive api to store it in there and den a delete request to the posts api to remove it from there
-function removeEvent(arr: eventType[], id: number) {
-  let [foundEvent] = arr.filter((ev) => ev.id === id);
-  let newArr = arr.filter((ev) => ev.id !== id);
-  console.log(foundEvent);
+// function removeEvent(arr: eventType[], id: number) {
+//   let [foundEvent] = arr.filter((ev) => ev.id === id);
 
-  let option = {
-    method: "DELETE",
-    headers: {
-      "content-Type": "application/json",
-    },
-  };
+//   if(!foundEvent) return arr
 
-  let option2 = {
-    method: "POST",
-    headers: {
-      "content-Type": "application/json",
-    },
-    body: JSON.stringify(foundEvent),
-  };
+//   let newArr = arr.filter((ev) => ev.id !== id);
+//   console.log(foundEvent);
 
-  fetchData(
-    `http://localhost:8080/posts/${id}`,
-    "http://localhost:8080/archive",
-    option,
-    option2
-  );
+//   let option = {
+//     method: "DELETE",
+//     headers: {
+//       "content-Type": "application/json",
+//     },
+//   };
 
-  return newArr;
-}
-// SortEvents is a function that has a bubble sort implemented inside of it to sort events based of the condition it recieve from the sort input
-function sortEvents(events: eventType[], condition: string) {
-  let sorted = [...events];
-  let finalResult;
+//   let option2 = {
+//     method: "POST",
+//     headers: {
+//       "content-Type": "application/json",
+//     },
+//     body: JSON.stringify(foundEvent),
+//   };
 
-  for (let i = 0; i < sorted.length - 1; i++) {
-    for (let j = 0; j < sorted.length - 1 - i; j++) {
-      if (condition === "title-asc")
-        finalResult = sorted[j].title.localeCompare(sorted[j + 1].title) > 0;
-      if (condition === "title-desc")
-        finalResult = sorted[j].title.localeCompare(sorted[j + 1].title) < 0;
-      if (condition === "price-asc")
-        finalResult = sorted[j].price > sorted[j + 1].price;
-      if (condition === "price-desc")
-        finalResult = sorted[j].price < sorted[j + 1].price;
-      if (condition === "seats-asc")
-        finalResult = sorted[j].seats > sorted[j + 1].seats;
+//   fetchData(
+//     `http://localhost:8080/posts/${id}`,
+//     "http://localhost:8080/archive",
+//     option,
+//     option2
+//   );
 
-      if (finalResult) {
-        let tmp = sorted[j];
-        sorted[j] = sorted[j + 1];
-        sorted[j + 1] = tmp;
-      }
-    }
-  }
-
-  return sorted;
-}
+//   return newArr;
+// }
 // showEventDetails is a function that shows a model with all info about an event
 function showEventDetails(id: number, show: boolean, arr: eventType[]) {
   const modal = document.querySelector("#event-modal")!;
